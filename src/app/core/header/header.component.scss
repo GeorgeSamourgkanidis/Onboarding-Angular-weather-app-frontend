@@ -1,0 +1,34 @@
+.headerContainer {
+  min-height: 70px;
+  width: 100%;
+  padding: 8px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  font-family: Inter;
+ 
+  font-weight: 700;
+
+  .logoImg {
+    width: 152px;
+  }
+
+  .linkColor {
+    color: #1d2433 !important;
+  }
+}
+
+.shadowBottom {
+  box-shadow: 0 1px 1px #e1e6ef;
+}
+
+@media (max-width: 576px) {
+  .headerContainer {
+    flex-direction: row-reverse;
+
+    .logoImg {
+      margin: 0 auto;
+    }
+  }
+}
