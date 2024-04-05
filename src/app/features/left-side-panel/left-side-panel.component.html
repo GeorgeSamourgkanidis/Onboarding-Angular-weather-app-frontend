@@ -1,0 +1,25 @@
+<div class="leftSideContainer">
+  <span class="title">Favorite Locations</span>
+
+  <mat-form-field class="searchBox" appearance="outline">
+    <mat-icon matIconPrefix>search</mat-icon>
+    <input type="tel" matInput placeholder="Search Location" />
+    <button mat-button matSuffix><mat-icon>close</mat-icon></button>
+  </mat-form-field>
+
+  @for (favoriteCity of favoriteCities; track favoriteCity) {
+    <div class="favoriteCity">
+      <div class="details gap4">
+        <div class="d-flex gap4 flex-wrap">
+          <mat-icon>{{ favoriteCity.currentWeatherIcon }}</mat-icon>
+          <div class="fw-bold">{{ favoriteCity.max }}&deg;C - {{ favoriteCity.min }}&deg;C</div>
+        </div>
+        <div class="d-flex gap4">
+          <span class="separator">|</span>
+          <span>{{ favoriteCity.cityName }}</span>
+        </div>
+      </div>
+      <mat-icon class="ms-auto">chevron_right</mat-icon>
+    </div>
+  }
+</div>

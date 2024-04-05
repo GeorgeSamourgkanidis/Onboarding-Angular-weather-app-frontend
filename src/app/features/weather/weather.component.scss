@@ -1,0 +1,15 @@
+.weatherGridContainer {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-gap: 1.5rem;
+  grid-template-columns: 380px calc(100% - 380px);
+  grid-template-rows: [sidebar-row-start content-row-start] auto [sidebar-row-end footer-row-start] 10% [footer-row-end];
+}
+
+@media (max-width: 1023px) { //smaller than laptop
+  .weatherGridContainer {
+    display: flex;
+    flex-direction: column;
+  }
+}
