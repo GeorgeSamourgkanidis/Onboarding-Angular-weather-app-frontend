@@ -1,0 +1,30 @@
+<div class="detailsContainer">
+  <div class="titleDiv">
+    <div class="smallScreenVisible">
+      <button mat-button (click)="handleResetSelectedCity()">
+        <mat-icon class="backButton">chevron_left</mat-icon>
+      </button>
+    </div>
+    <div class="title">
+      <div class="d-flex">
+        <span class="cityName">Thessaloniki</span>
+        <span class="bigScreenVisible">,&nbsp;</span>
+      </div>
+
+      <span>Central Macedonia, Greece</span>
+    </div>
+    <button mat-mini-fab class="bg-white"><mat-icon class="text-dark">favorite</mat-icon></button>
+  </div>
+
+  <div class="cityWeather">
+    <div class="currentTemperature">
+      <h2 class="fw-bold">22&deg;C</h2>
+      <span>Day {{ cityDetails.max }}&deg;C - Night {{ cityDetails.min }}&deg;C</span>
+    </div>
+    <mat-icon>{{ cityDetails.currentWeatherIcon }}</mat-icon>
+  </div>
+
+  <div class="lineChartDiv">
+    <span class="lineChartTitle">Temperature </span>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+.smallScreenVisible {
+  display: none;
+}
+
+.bigScreenVisible {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .smallScreenVisible {
+    display: block !important;
+  }
+
+  .bigScreenVisible {
+    display: none !important;
+  }
+}
+
+.mat-mdc-button > .mat-icon {
+  margin: 0 !important;
+}
+
+.mat-mdc-form-field-infix {
+  min-height: unset !important;
+  padding: 0 !important;
+  align-self: center;
+}

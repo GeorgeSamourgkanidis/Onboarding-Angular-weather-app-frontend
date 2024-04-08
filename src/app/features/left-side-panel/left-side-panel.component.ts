@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,8 +14,11 @@ import { FavoriteCity } from '../../models/weather';
 })
 export class LeftSidePanelComponent {
   searchInput: string = '';
+  @Output()
+  showCityDetails = new EventEmitter<FavoriteCity>();
 
-  favoriteCities: FavoriteCity[] = [ //dummy data
+  favoriteCities: FavoriteCity[] = [
+    //dummy data
     {
       min: 12,
       max: 25,
@@ -29,4 +32,8 @@ export class LeftSidePanelComponent {
       currentWeatherIcon: 'cloud'
     }
   ];
+
+  handleFavoriteCityClicked(cityDetails: FavoriteCity) {
+    this.showCityDetails.emit(cityDetails);
+  }
 }

@@ -8,7 +8,7 @@
   </mat-form-field>
 
   @for (favoriteCity of favoriteCities; track favoriteCity) {
-    <div class="favoriteCity">
+    <div class="favoriteCity" (click)="handleFavoriteCityClicked(favoriteCity)">
       <div class="details gap4">
         <div class="d-flex gap4 flex-wrap">
           <mat-icon>{{ favoriteCity.currentWeatherIcon }}</mat-icon>
