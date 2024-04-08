@@ -2,7 +2,6 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
 
   .titleDiv {
     width: 100%;
@@ -51,17 +50,23 @@
     }
   }
 
-  .lineChartDiv {
+  .chartDiv {
     padding: 24px;
     background-color: white;
+    border-radius: 5px;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 3rem;
 
-    .lineChartTitle {
+    .chartTitle {
       font-size: 1.5rem;
       font-weight: bold;
       border-radius: 5px;
+    }
+
+    .chart {
+      border: 1px solid #e1e6ef;
     }
   }
 }

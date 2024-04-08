@@ -1,8 +1,14 @@
 .pagesDiv {
   min-height: calc(100vh - 70px);
   background-color: #e1e6ef;
-  padding: 3rem;
+  padding: 5rem;
   font-family: Inter;
   font-size: 16px;
   color: #1d2433cc;
+}
+
+@media (max-width: 1023px) {
+  .pagesDiv {
+    padding: 3rem;
+  }
 }

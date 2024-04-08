@@ -16,7 +16,7 @@
     <button mat-mini-fab class="bg-white"><mat-icon class="text-dark">favorite</mat-icon></button>
   </div>
 
-  <div class="cityWeather">
+  <div class="cityWeather mt-4">
     <div class="currentTemperature">
       <h2 class="fw-bold">22&deg;C</h2>
       <span>Day {{ cityDetails.max }}&deg;C - Night {{ cityDetails.min }}&deg;C</span>
@@ -24,7 +24,27 @@
     <mat-icon>{{ cityDetails.currentWeatherIcon }}</mat-icon>
   </div>
 
-  <div class="lineChartDiv">
-    <span class="lineChartTitle">Temperature </span>
+  <div class="chartDiv">
+    <span class="chartTitle">Temperature</span>
+
+    <div class="chart">
+      <div echarts [options]="lineChartOption" [loading]="false"></div>
+    </div>
+  </div>
+
+  <div class="chartDiv">
+    <span class="chartTitle">Maximum Temperature</span>
+
+    <div class="chart">
+      <div echarts [options]="gaugeChartOption" [loading]="false"></div>
+    </div>
+  </div>
+
+  <div class="chartDiv">
+    <span class="chartTitle">Air Quality Index</span>
+
+    <div class="chart">
+      <div echarts [options]="radarChartOption" [loading]="false"></div>
+    </div>
   </div>
 </div>
