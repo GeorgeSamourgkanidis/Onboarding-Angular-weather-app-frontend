@@ -59,10 +59,17 @@
     gap: 0.5rem;
     margin-top: 3rem;
 
-    .chartTitle {
-      font-size: 1.5rem;
-      font-weight: bold;
-      border-radius: 5px;
+    .chartTitleDiv {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+
+      .chartTitle {
+        font-size: 1.5rem;
+        font-weight: bold;
+        border-radius: 5px;
+      }
     }
 
     .chart {

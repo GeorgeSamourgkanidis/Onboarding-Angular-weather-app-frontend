@@ -25,7 +25,10 @@
   </div>
 
   <div class="chartDiv">
-    <span class="chartTitle">Temperature</span>
+    <div class="chartTitleDiv">
+      <span class="chartTitle">Temperature</span>
+      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+    </div>
 
     <div class="chart">
       <div echarts [options]="lineChartOption" [loading]="false"></div>
@@ -33,7 +36,10 @@
   </div>
 
   <div class="chartDiv">
-    <span class="chartTitle">Maximum Temperature</span>
+    <div class="chartTitleDiv">
+      <span class="chartTitle">Maximum Temperature</span>
+      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+    </div>
 
     <div class="chart">
       <div echarts [options]="gaugeChartOption" [loading]="false"></div>
@@ -41,7 +47,10 @@
   </div>
 
   <div class="chartDiv">
-    <span class="chartTitle">Air Quality Index</span>
+    <div class="chartTitleDiv">
+      <span class="chartTitle">Air Quality Index</span>
+      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+    </div>
 
     <div class="chart">
       <div echarts [options]="radarChartOption" [loading]="false"></div>

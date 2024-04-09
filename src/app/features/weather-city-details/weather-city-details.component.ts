@@ -93,4 +93,8 @@ export class WeatherCityDetailsComponent {
   handleResetSelectedCity() {
     this.resetSelectedCity.emit();
   }
+
+  refreshData() { //implement when I will add ngrx
+
+  }
 }
