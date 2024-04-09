@@ -1,22 +1,32 @@
 <div class="leftSideContainer">
-  <span class="title">Favorite Locations</span>
+  <span class="title mb-3">Favorite Locations</span>
 
   <mat-form-field class="searchBox" appearance="outline">
     <mat-icon matIconPrefix>search</mat-icon>
-    <input type="tel" matInput placeholder="Search Location" />
-    <button mat-button matSuffix><mat-icon>close</mat-icon></button>
+    <input type="text" matInput placeholder="Search Location" (keyup.enter)="searchCity()" [(ngModel)]="searchInput" />
+    @if (!showLoading) {
+      <button mat-button matSuffix (click)="clearSearch()"><mat-icon>close</mat-icon></button>
+    } @else {
+      <button mat-button matSuffix>
+        <mat-spinner color="primary" diameter="20"></mat-spinner>
+      </button>
+    }
+    <mat-hint class="text-danger" *ngIf="searchError"> Input not valid. </mat-hint>
   </mat-form-field>
 
-  @for (favoriteCity of favoriteCities; track favoriteCity) {
-    <div class="favoriteCity" (click)="handleFavoriteCityClicked(favoriteCity)">
-      <div class="details gap4">
-        <div class="d-flex gap4 flex-wrap">
-          <mat-icon>{{ favoriteCity.currentWeatherIcon }}</mat-icon>
-          <div class="fw-bold">{{ favoriteCity.max }}&deg;C - {{ favoriteCity.min }}&deg;C</div>
+  @for (favoriteCityData of favoriteCitiesData; track favoriteCityData) {
+    <div
+      class="favoriteCity mb-3"
+      [ngClass]="{ selectedCity: selectedCity === favoriteCityData.cityName }"
+      (click)="handleFavoriteCityClicked(favoriteCityData)">
+      <div class="details gap4 align-items-center">
+        <div class="d-flex gap4 flex-wrap align-items-center">
+          <img class="weatherIcon" [src]="favoriteCityData.currentWeatherIcon" alt="" />
+          <div class="fw-bold">{{ favoriteCityData.max }}&deg;C - {{ favoriteCityData.min }}&deg;C</div>
         </div>
         <div class="d-flex gap4">
           <span class="separator">|</span>
-          <span>{{ favoriteCity.cityName }}</span>
+          <span>{{ favoriteCityData.cityName }}</span>
         </div>
       </div>
       <mat-icon class="ms-auto">chevron_right</mat-icon>

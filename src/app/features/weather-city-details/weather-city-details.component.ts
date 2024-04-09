@@ -23,7 +23,7 @@ export class WeatherCityDetailsComponent {
     tooltip: {},
     xAxis: {
       type: 'category',
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      data: ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00']
     },
     yAxis: {
       type: 'value'
@@ -43,16 +43,14 @@ export class WeatherCityDetailsComponent {
         data: [20],
         type: 'gauge',
         itemStyle: {
-          color: "#5470c6"
+          color: '#5470c6'
         },
         progress: {
           itemStyle: {
-            color: "red"
+            color: 'red'
           }
-          
         }
-      },
-      
+      }
     ]
   };
 

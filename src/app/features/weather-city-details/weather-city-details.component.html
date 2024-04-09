@@ -21,7 +21,7 @@
       <h2 class="fw-bold">22&deg;C</h2>
       <span>Day {{ cityDetails.max }}&deg;C - Night {{ cityDetails.min }}&deg;C</span>
     </div>
-    <mat-icon>{{ cityDetails.currentWeatherIcon }}</mat-icon>
+    <img [src]="cityDetails.currentWeatherIcon" alt="" />
   </div>
 
   <div class="chartDiv">
