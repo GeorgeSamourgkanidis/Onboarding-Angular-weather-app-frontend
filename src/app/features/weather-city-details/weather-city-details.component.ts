@@ -4,6 +4,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { FavoriteCity } from '../../models/weather';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
+import { WeatherService } from '../../services/weather.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-weather-city-details',
@@ -18,6 +20,9 @@ export class WeatherCityDetailsComponent {
   cityDetails!: FavoriteCity;
   @Output()
   resetSelectedCity = new EventEmitter<void>();
+  lineChartLoading = false;
+  gaugeChartLoading = false;
+  radarChartLoading = false;
 
   lineChartOption: EChartsOption = {
     tooltip: {},
@@ -90,11 +95,34 @@ export class WeatherCityDetailsComponent {
     ]
   };
 
+  constructor(private weatherService: WeatherService) {}
+
   handleResetSelectedCity() {
     this.resetSelectedCity.emit();
   }
 
-  refreshData() { //implement when I will add ngrx
-
+  refreshLineChart() {
+    this.lineChartLoading = true;
+    this.weatherService
+      .getYesterdayWeatherHourly(this.cityDetails.cityName)
+      .pipe(take(1))
+      .subscribe((res: any) => {
+        this.lineChartOption = {
+          ...this.lineChartOption,
+          series: [
+            {
+              data: res.forecast.forecastday[0].hour
+                .filter((_: any, index: number) => index % 3 === 0)
+                .map((data: any) => data.temp_c),
+              type: 'line'
+            }
+          ]
+        };
+        this.lineChartLoading = false;
+      });
   }
+
+  refreshGaugeChart() {}
+
+  refreshRadarChart() {}
 }

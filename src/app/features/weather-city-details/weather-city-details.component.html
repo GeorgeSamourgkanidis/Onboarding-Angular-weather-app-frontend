@@ -27,33 +27,33 @@
   <div class="chartDiv">
     <div class="chartTitleDiv">
       <span class="chartTitle">Temperature</span>
-      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+      <button mat-button (click)="refreshLineChart()"><mat-icon>sync</mat-icon></button>
     </div>
 
     <div class="chart">
-      <div echarts [options]="lineChartOption" [loading]="false"></div>
+      <div echarts [options]="lineChartOption" [loading]="lineChartLoading"></div>
     </div>
   </div>
 
   <div class="chartDiv">
     <div class="chartTitleDiv">
       <span class="chartTitle">Maximum Temperature</span>
-      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+      <button mat-button (click)="refreshGaugeChart()"><mat-icon>sync</mat-icon></button>
     </div>
 
     <div class="chart">
-      <div echarts [options]="gaugeChartOption" [loading]="false"></div>
+      <div echarts [options]="gaugeChartOption" [loading]="gaugeChartLoading"></div>
     </div>
   </div>
 
   <div class="chartDiv">
     <div class="chartTitleDiv">
       <span class="chartTitle">Air Quality Index</span>
-      <button mat-button (click)="refreshData()"><mat-icon>sync</mat-icon></button>
+      <button mat-button (click)="refreshRadarChart()"><mat-icon>sync</mat-icon></button>
     </div>
 
     <div class="chart">
-      <div echarts [options]="radarChartOption" [loading]="false"></div>
+      <div echarts [options]="radarChartOption" [loading]="radarChartLoading"></div>
     </div>
   </div>
 </div>
