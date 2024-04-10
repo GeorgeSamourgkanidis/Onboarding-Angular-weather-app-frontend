@@ -32,7 +32,7 @@ export class LeftSidePanelComponent implements OnInit {
   searchError: boolean = false;
 
   @Output()
-  showCityDetails = new EventEmitter<FavoriteCity>();
+  showCityDetails = new EventEmitter<string>();
 
   favoriteCitiesNames: string[] = ['Thessaloniki', 'Athens'];
   favoriteCitiesData: FavoriteCity[] = [];
@@ -61,24 +61,18 @@ export class LeftSidePanelComponent implements OnInit {
   }
 
   handleFavoriteCityClicked(cityDetails: FavoriteCity) {
-    this.showCityDetails.emit(cityDetails);
+    this.showCityDetails.emit(cityDetails.cityName);
     this.selectedCity = cityDetails.cityName;
   }
 
   searchCity() {
     this.showLoading = true;
     this.weatherService
-      .getYesterdayWeatherHourly(this.searchInput)
+      .checkSearchValidity(this.searchInput)
       .pipe(take(1))
       .subscribe({
-        next: (res: any) => {
-          console.log(res);
-          this.showCityDetails.emit({
-            min: res.forecast.forecastday[0].day.mintemp_c,
-            max: res.forecast.forecastday[0].day.maxtemp_c,
-            cityName: this.searchInput,
-            currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-          })
+        next: () => {
+          this.showCityDetails.emit(this.searchInput);
           this.selectedCity = this.searchInput;
           this.searchError = false;
           this.showLoading = false;

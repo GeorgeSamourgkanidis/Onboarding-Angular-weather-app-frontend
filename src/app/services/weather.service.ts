@@ -8,8 +8,18 @@ import { environment } from '../../environments/environment';
 export class WeatherService {
   constructor(private http: HttpClient) {}
 
+  checkSearchValidity(cityName: string) {
+    const url = `${environment.baseUrl}/search.json?key=${environment.apiKey}&q=${cityName}`;
+    return this.http.get(url);
+  }
+
   getCurrentWeather(cityName: string) {
     const url = `${environment.baseUrl}/current.json?key=${environment.apiKey}&q=${cityName}&aqi=yes`;
+    return this.http.get(url);
+  }
+
+  getTodayAndTomorrowForecast(cityName: string) {
+    const url = `${environment.baseUrl}/forecast.json?key=${environment.apiKey}&q=${cityName}&days=2&aqi=yes&alerts=no`;
     return this.http.get(url);
   }
 
@@ -18,7 +28,7 @@ export class WeatherService {
     return this.http.get(url);
   }
 
-  getYesterdayWeatherHourly(cityName: string) {
+  getYesterdayWeather(cityName: string) {
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;

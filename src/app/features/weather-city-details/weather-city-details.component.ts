@@ -1,110 +1,75 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { FavoriteCity } from '../../models/weather';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { WeatherService } from '../../services/weather.service';
-import { take } from 'rxjs';
+import { forkJoin, take } from 'rxjs';
+import { CityMaxTemps, CurrentCityWeatherDetails } from '../../models/weather';
+import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from '../../data/charts';
+import { NgClass } from '@angular/common';
 
 @Component({
   selector: 'app-weather-city-details',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, NgxEchartsDirective],
+  imports: [NgClass, MatIconModule, MatButtonModule, NgxEchartsDirective],
   templateUrl: './weather-city-details.component.html',
   styleUrl: './weather-city-details.component.scss',
   providers: [provideEcharts()]
 })
-export class WeatherCityDetailsComponent {
+export class WeatherCityDetailsComponent implements OnChanges {
   @Input()
-  cityDetails!: FavoriteCity;
+  selectedCity: string;
   @Output()
   resetSelectedCity = new EventEmitter<void>();
+
   lineChartLoading = false;
   gaugeChartLoading = false;
   radarChartLoading = false;
+  currentCityWeatherDetails: CurrentCityWeatherDetails = null;
+  cityMaxTemps: CityMaxTemps = null;
 
-  lineChartOption: EChartsOption = {
-    tooltip: {},
-    xAxis: {
-      type: 'category',
-      data: ['0:00', '3:00', '6:00', '9:00', '12:00', '15:00', '18:00', '21:00']
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [
-      {
-        data: [20, 21, 22, 23, 24, 25, 26],
-        type: 'line'
-      }
-    ]
-  };
-
-  gaugeChartOption: EChartsOption = {
-    tooltip: {},
-    series: [
-      {
-        data: [20],
-        type: 'gauge',
-        itemStyle: {
-          color: '#5470c6'
-        },
-        progress: {
-          itemStyle: {
-            color: 'red'
-          }
-        }
-      }
-    ]
-  };
-
-  radarChartOption: EChartsOption = {
-    color: ['blue', 'green'],
-    tooltip: {},
-    legend: {
-      data: ['Allocated Budget', 'Actual Spending'],
-      textStyle: {
-        color: 'black'
-      }
-    },
-    radar: {
-      indicator: [
-        { name: 'Sales', max: 6500 },
-        { name: 'Administration', max: 16000 },
-        { name: 'Information Techology', max: 30000 },
-        { name: 'Customer Support', max: 38000 },
-        { name: 'Development', max: 52000 },
-        { name: 'Marketing', max: 25000 }
-      ]
-    },
-    series: [
-      {
-        type: 'radar',
-        data: [
-          {
-            value: [4300, 10000, 28000, 35000, 50000, 19000],
-            name: 'Allocated Budget'
-          },
-          {
-            value: [5000, 14000, 28000, 31000, 42000, 21000],
-            name: 'Actual Spending'
-          }
-        ]
-      }
-    ]
-  };
+  lineChartOption: EChartsOption = lineChartOptionData;
+  gaugeChartOption: EChartsOption = gaugeChartOptionData;
+  gaugeChartDay: string = 'yesterday';
+  radarChartOption: EChartsOption = radarChartOptionData;
 
   constructor(private weatherService: WeatherService) {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['selectedCity'].currentValue) {
+      const city = changes['selectedCity'].currentValue;
+      this.setCurrentCityDetails(city);
+      this.setLineChartData(city);
+      this.setGaugeChartData(city);
+    }
+  }
 
   handleResetSelectedCity() {
     this.resetSelectedCity.emit();
   }
 
-  refreshLineChart() {
+  setCurrentCityDetails(cityName: string) {
+    this.weatherService
+      .getTodayForecast(cityName)
+      .pipe(take(1))
+      .subscribe((res: any) => {
+        this.currentCityWeatherDetails = {
+          min: res.forecast.forecastday[0].day.mintemp_c,
+          max: res.forecast.forecastday[0].day.maxtemp_c,
+          current: res.current.temp_c,
+          name: res.location.name,
+          region: res.location.region,
+          country: res.location.country,
+          currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
+        };
+      });
+  }
+
+  setLineChartData(cityName: string) {
     this.lineChartLoading = true;
     this.weatherService
-      .getYesterdayWeatherHourly(this.cityDetails.cityName)
+      .getYesterdayWeather(cityName)
       .pipe(take(1))
       .subscribe((res: any) => {
         this.lineChartOption = {
@@ -122,7 +87,52 @@ export class WeatherCityDetailsComponent {
       });
   }
 
-  refreshGaugeChart() {}
+  setGaugeChartData(cityName: string) {
+    this.gaugeChartLoading = true;
+    forkJoin(
+      this.weatherService.getYesterdayWeather(cityName),
+      this.weatherService.getTodayAndTomorrowForecast(cityName)
+    )
+      .pipe(take(1))
+      .subscribe((res: any) => {
+        this.cityMaxTemps = {
+          yesterday: res[0].forecast.forecastday[0].day.maxtemp_c,
+          today: res[1].forecast.forecastday[0].day.maxtemp_c,
+          tomorrow: res[1].forecast.forecastday[1].day.maxtemp_c
+        };
+        this.setGaugeChartDay('yesterday');
+        this.gaugeChartLoading = false;
+      });
+  }
+
+  setGaugeChartDay(day: 'yesterday' | 'today' | 'tomorrow') {
+    this.gaugeChartDay = day;
+    this.gaugeChartOption = {
+      ...this.gaugeChartOption,
+      series: [
+        {
+          data: [this.cityMaxTemps[day]],
+          type: 'gauge',
+          itemStyle: {
+            color: '#5470c6'
+          },
+          progress: {
+            itemStyle: {
+              color: 'red'
+            }
+          }
+        }
+      ]
+    };
+  }
+
+  refreshLineChart() {
+    this.setLineChartData(this.selectedCity);
+  }
+
+  refreshGaugeChart() {
+    this.setGaugeChartData(this.selectedCity);
+  }
 
   refreshRadarChart() {}
 }

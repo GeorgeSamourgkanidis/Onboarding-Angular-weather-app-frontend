@@ -1,9 +1,9 @@
 <div class="weatherGridContainer">
-  <div [ngClass]="{'bigScreenVisible': selectedCityDetails}">
+  <div [ngClass]="{ bigScreenVisible: selectedCity }">
     <app-left-side-panel (showCityDetails)="onShowCityDetails($event)" />
   </div>
 
-  @if (selectedCityDetails) {
-    <app-weather-city-details [cityDetails]="selectedCityDetails" (resetSelectedCity)="onResetSelectedCity()" />
+  @if (selectedCity) {
+    <app-weather-city-details [selectedCity]="selectedCity" (resetSelectedCity)="onResetSelectedCity()" />
   }
 </div>

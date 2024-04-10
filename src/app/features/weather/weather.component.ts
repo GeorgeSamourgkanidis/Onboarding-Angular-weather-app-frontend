@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { LeftSidePanelComponent } from '../left-side-panel/left-side-panel.component';
 import { WeatherCityDetailsComponent } from '../weather-city-details/weather-city-details.component';
-import { FavoriteCity } from '../../models/weather';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -12,15 +11,13 @@ import { CommonModule } from '@angular/common';
   styleUrl: './weather.component.scss'
 })
 export class WeatherComponent {
-  selectedCityDetails: FavoriteCity = null;
+  selectedCity: string = null;
 
-  onShowCityDetails(cityDetails: FavoriteCity) {
-    console.log(cityDetails);
-
-    this.selectedCityDetails = cityDetails;
+  onShowCityDetails(selectedCity: string) {
+    this.selectedCity = selectedCity;
   }
 
   onResetSelectedCity() {
-    this.selectedCityDetails = null;
+    this.selectedCity = null;
   }
 }
