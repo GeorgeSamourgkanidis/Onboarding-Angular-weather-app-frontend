@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,7 +8,9 @@ import { FavoriteCity } from '../../models/weather';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectFavoriteCities } from '../../store/weather.selector';
 
 @Component({
   selector: 'app-left-side-panel',
@@ -25,7 +27,7 @@ import { take } from 'rxjs';
   templateUrl: './left-side-panel.component.html',
   styleUrl: './left-side-panel.component.scss'
 })
-export class LeftSidePanelComponent implements OnInit {
+export class LeftSidePanelComponent implements OnInit, OnDestroy {
   searchInput: string = '';
   selectedCity: string;
   showLoading: boolean = false;
@@ -34,25 +36,37 @@ export class LeftSidePanelComponent implements OnInit {
   @Output()
   showCityDetails = new EventEmitter<FavoriteCity>();
 
-  favoriteCitiesNames: string[] = ['Thessaloniki', 'Athens'];
+  private store = inject(Store);
+  private ngUnsubscribe = new Subject<void>();
   favoriteCitiesData: FavoriteCity[] = [];
 
   constructor(private weatherService: WeatherService) {}
 
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
   ngOnInit(): void {
-    this.favoriteCitiesNames.forEach(city => {
-      this.weatherService
-        .getTodayForecast(city)
-        .pipe(take(1))
-        .subscribe((res: any) =>
-          this.favoriteCitiesData.push({
-            min: res.forecast.forecastday[0].day.mintemp_c,
-            max: res.forecast.forecastday[0].day.maxtemp_c,
-            cityName: city,
-            currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-          })
-        );
-    });
+    this.store
+      .select(selectFavoriteCities)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(favoriteCities => {
+        this.favoriteCitiesData = [];
+        favoriteCities.forEach(favoriteCity => {
+          this.weatherService
+            .getTodayForecast(favoriteCity)
+            .pipe(take(1))
+            .subscribe((res: any) =>
+              this.favoriteCitiesData.push({
+                min: res.forecast.forecastday[0].day.mintemp_c,
+                max: res.forecast.forecastday[0].day.maxtemp_c,
+                cityName: favoriteCity,
+                currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
+              })
+            );
+        });
+      });
   }
 
   clearSearch() {
@@ -78,7 +92,7 @@ export class LeftSidePanelComponent implements OnInit {
             max: res.forecast.forecastday[0].day.maxtemp_c,
             cityName: this.searchInput,
             currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-          })
+          });
           this.selectedCity = this.searchInput;
           this.searchError = false;
           this.showLoading = false;
