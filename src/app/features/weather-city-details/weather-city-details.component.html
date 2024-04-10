@@ -13,7 +13,12 @@
 
       <span>Central Macedonia, Greece</span>
     </div>
-    <button mat-mini-fab class="bg-white"><mat-icon class="text-dark">favorite</mat-icon></button>
+    <!-- *ngrxLet instead of ngIf + async pipe -->
+    <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved"> 
+      <button mat-mini-fab class="bg-white" (click)="saveUnSaveFavoriteCity(selectedCityIsSaved)">
+        <mat-icon class="text-dark" [ngClass]="{ cityIsSaved: selectedCityIsSaved }">favorite</mat-icon>
+      </button>
+    </ng-container>
   </div>
 
   <div class="cityWeather mt-4">

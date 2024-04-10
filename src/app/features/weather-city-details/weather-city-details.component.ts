@@ -1,21 +1,26 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FavoriteCity } from '../../models/weather';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { WeatherService } from '../../services/weather.service';
-import { take } from 'rxjs';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { selectCityIsSaved, selectSelectedCity } from '../../store/weather.selector';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { LetDirective } from '@ngrx/component';
+import { saveFavoriteCitySuccess, unsaveFavoriteCitySuccess } from '../../store/weather.actions';
 
 @Component({
   selector: 'app-weather-city-details',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, NgxEchartsDirective],
+  imports: [LetDirective, NgClass, AsyncPipe, MatIconModule, MatButtonModule, NgxEchartsDirective],
   templateUrl: './weather-city-details.component.html',
   styleUrl: './weather-city-details.component.scss',
   providers: [provideEcharts()]
 })
-export class WeatherCityDetailsComponent {
+export class WeatherCityDetailsComponent implements OnInit, OnDestroy {
   @Input()
   cityDetails!: FavoriteCity;
   @Output()
@@ -23,6 +28,9 @@ export class WeatherCityDetailsComponent {
   lineChartLoading = false;
   gaugeChartLoading = false;
   radarChartLoading = false;
+  private store = inject(Store);
+  private ngUnsubscribe = new Subject<void>();
+  selectedCityIsSaved$: Observable<boolean>;
 
   lineChartOption: EChartsOption = {
     tooltip: {},
@@ -97,6 +105,20 @@ export class WeatherCityDetailsComponent {
 
   constructor(private weatherService: WeatherService) {}
 
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  ngOnInit(): void {
+    this.store
+      .select(selectSelectedCity)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(cityName => {
+        this.selectedCityIsSaved$ = this.store.select(selectCityIsSaved(cityName));
+      });
+  }
+
   handleResetSelectedCity() {
     this.resetSelectedCity.emit();
   }
@@ -125,4 +147,13 @@ export class WeatherCityDetailsComponent {
   refreshGaugeChart() {}
 
   refreshRadarChart() {}
+
+  saveUnSaveFavoriteCity(isSaved: boolean) {
+    //TODO dont dispatch success when I implement backend save/unsave
+    if (isSaved) {
+      this.store.dispatch(unsaveFavoriteCitySuccess({ cityToUnsave: this.cityDetails.cityName }));
+    } else {
+      this.store.dispatch(saveFavoriteCitySuccess({ cityToSave: this.cityDetails.cityName }));
+    }
+  }
 }

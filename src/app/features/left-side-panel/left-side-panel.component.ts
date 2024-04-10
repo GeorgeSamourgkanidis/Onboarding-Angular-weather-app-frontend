@@ -11,6 +11,7 @@ import { WeatherService } from '../../services/weather.service';
 import { Subject, take, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectFavoriteCities } from '../../store/weather.selector';
+import { setSelectedCity } from '../../store/weather.actions';
 
 @Component({
   selector: 'app-left-side-panel',
@@ -77,6 +78,8 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   handleFavoriteCityClicked(cityDetails: FavoriteCity) {
     this.showCityDetails.emit(cityDetails);
     this.selectedCity = cityDetails.cityName;
+    this.store.dispatch(setSelectedCity({ cityName: cityDetails.cityName }));
+    this.searchInput = '';
   }
 
   searchCity() {
@@ -86,7 +89,8 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: (res: any) => {
-          console.log(res);
+          this.store.dispatch(setSelectedCity({ cityName: this.searchInput }));
+
           this.showCityDetails.emit({
             min: res.forecast.forecastday[0].day.mintemp_c,
             max: res.forecast.forecastday[0].day.maxtemp_c,
