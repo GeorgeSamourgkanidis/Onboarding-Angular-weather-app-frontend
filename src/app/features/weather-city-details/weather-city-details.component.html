@@ -1,64 +1,95 @@
-<div class="detailsContainer">
-  <div class="titleDiv">
-    <div class="smallScreenVisible">
-      <button mat-button (click)="handleResetSelectedCity()">
-        <mat-icon class="backButton">chevron_left</mat-icon>
-      </button>
+@if (currentCityWeatherDetails) {
+  <div class="detailsContainer">
+    <div class="titleDiv">
+      <div class="smallScreenVisible">
+        <button mat-button (click)="handleResetSelectedCity()">
+          <mat-icon class="backButton">chevron_left</mat-icon>
+        </button>
+      </div>
+      <div class="title">
+        <div class="d-flex">
+          <span class="cityName">{{ currentCityWeatherDetails.name }}</span>
+          <span class="bigScreenVisible">,&nbsp;</span>
+        </div>
+
+        <span>{{ currentCityWeatherDetails.region }}, {{ currentCityWeatherDetails.country }}</span>
+      </div>
+      <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved"> 
+        <button mat-mini-fab class="bg-white" (click)="saveUnSaveFavoriteCity(selectedCityIsSaved)">
+          <mat-icon class="text-dark" [ngClass]="{ cityIsSaved: selectedCityIsSaved }">favorite</mat-icon>
+        </button>
+      </ng-container>
     </div>
-    <div class="title">
-      <div class="d-flex">
-        <span class="cityName">Thessaloniki</span>
-        <span class="bigScreenVisible">,&nbsp;</span>
+
+    <div class="cityWeather mt-4">
+      <div class="currentTemperature">
+        <h2 class="fw-bold">{{ currentCityWeatherDetails.current }}&deg;C</h2>
+        <span>Day {{ currentCityWeatherDetails.max }}&deg;C - Night {{ currentCityWeatherDetails.min }}&deg;C</span>
+      </div>
+      <img [src]="currentCityWeatherDetails.currentWeatherIcon" alt="" />
+    </div>
+
+    <div class="chartDiv">
+      <div class="chartTitleDiv">
+        <span class="chartTitle">Temperature</span>
+        <button mat-button (click)="refreshLineChart()"><mat-icon>sync</mat-icon></button>
       </div>
 
-      <span>Central Macedonia, Greece</span>
+      <div class="dayButtonsDiv">
+        <button mat-button disabled class="selectedDay rounded-0">Yesterday</button>
+      </div>
+
+      <div class="chart">
+        <div echarts [options]="lineChartOption" [loading]="lineChartLoading"></div>
+      </div>
     </div>
-    <!-- *ngrxLet instead of ngIf + async pipe -->
-    <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved"> 
-      <button mat-mini-fab class="bg-white" (click)="saveUnSaveFavoriteCity(selectedCityIsSaved)">
-        <mat-icon class="text-dark" [ngClass]="{ cityIsSaved: selectedCityIsSaved }">favorite</mat-icon>
-      </button>
-    </ng-container>
+
+    <div class="chartDiv">
+      <div class="chartTitleDiv">
+        <span class="chartTitle">Maximum Temperature</span>
+        <button mat-button (click)="refreshGaugeChart()"><mat-icon>sync</mat-icon></button>
+      </div>
+
+      <div class="dayButtonsDiv">
+        <div class="d-flex">
+          <button
+            mat-button
+            class="rounded-0"
+            (click)="setGaugeChartDay('yesterday')"
+            [ngClass]="{ selectedDay: gaugeChartDay === 'yesterday' }">
+            Yesterday
+          </button>
+          <button
+            mat-button
+            class="rounded-0"
+            (click)="setGaugeChartDay('today')"
+            [ngClass]="{ selectedDay: gaugeChartDay === 'today' }">
+            Today
+          </button>
+          <button
+            mat-button
+            class="rounded-0"
+            (click)="setGaugeChartDay('tomorrow')"
+            [ngClass]="{ selectedDay: gaugeChartDay === 'tomorrow' }">
+            Tomorrow
+          </button>
+        </div>
+      </div>
+
+      <div class="chart">
+        <div echarts [options]="gaugeChartOption" [loading]="gaugeChartLoading"></div>
+      </div>
+    </div>
+
+    <div class="chartDiv">
+      <div class="chartTitleDiv">
+        <span class="chartTitle">Air Quality Index</span>
+        <button mat-button (click)="refreshRadarChart()"><mat-icon>sync</mat-icon></button>
+      </div>
+
+      <div class="chart">
+        <div echarts [options]="radarChartOption" [loading]="radarChartLoading"></div>
+      </div>
+    </div>
   </div>
-
-  <div class="cityWeather mt-4">
-    <div class="currentTemperature">
-      <h2 class="fw-bold">22&deg;C</h2>
-      <span>Day {{ cityDetails.max }}&deg;C - Night {{ cityDetails.min }}&deg;C</span>
-    </div>
-    <img [src]="cityDetails.currentWeatherIcon" alt="" />
-  </div>
-
-  <div class="chartDiv">
-    <div class="chartTitleDiv">
-      <span class="chartTitle">Temperature</span>
-      <button mat-button (click)="refreshLineChart()"><mat-icon>sync</mat-icon></button>
-    </div>
-
-    <div class="chart">
-      <div echarts [options]="lineChartOption" [loading]="lineChartLoading"></div>
-    </div>
-  </div>
-
-  <div class="chartDiv">
-    <div class="chartTitleDiv">
-      <span class="chartTitle">Maximum Temperature</span>
-      <button mat-button (click)="refreshGaugeChart()"><mat-icon>sync</mat-icon></button>
-    </div>
-
-    <div class="chart">
-      <div echarts [options]="gaugeChartOption" [loading]="gaugeChartLoading"></div>
-    </div>
-  </div>
-
-  <div class="chartDiv">
-    <div class="chartTitleDiv">
-      <span class="chartTitle">Air Quality Index</span>
-      <button mat-button (click)="refreshRadarChart()"><mat-icon>sync</mat-icon></button>
-    </div>
-
-    <div class="chart">
-      <div echarts [options]="radarChartOption" [loading]="radarChartLoading"></div>
-    </div>
-  </div>
-</div>
+}

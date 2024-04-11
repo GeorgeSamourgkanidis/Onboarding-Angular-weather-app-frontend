@@ -17,7 +17,7 @@
   @for (favoriteCityData of favoriteCitiesData; track favoriteCityData) {
     <div
       class="favoriteCity mb-3"
-      [ngClass]="{ selectedCity: selectedCity === favoriteCityData.cityName }"
+      [ngClass]="{ selectedCity: (selectedCity$ | async) === favoriteCityData.cityName }"
       (click)="handleFavoriteCityClicked(favoriteCityData)">
       <div class="details gap4 align-items-center">
         <div class="d-flex gap4 flex-wrap align-items-center">

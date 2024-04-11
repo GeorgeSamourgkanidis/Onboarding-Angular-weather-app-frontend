@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,9 +8,9 @@ import { FavoriteCity } from '../../models/weather';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
-import { Subject, take, takeUntil } from 'rxjs';
+import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectFavoriteCities } from '../../store/weather.selector';
+import { selectFavoriteCities, selectSelectedCity } from '../../store/weather.selector';
 import { setSelectedCity } from '../../store/weather.actions';
 
 @Component({
@@ -30,12 +30,9 @@ import { setSelectedCity } from '../../store/weather.actions';
 })
 export class LeftSidePanelComponent implements OnInit, OnDestroy {
   searchInput: string = '';
-  selectedCity: string;
-  showLoading: boolean = false;
   searchError: boolean = false;
-
-  @Output()
-  showCityDetails = new EventEmitter<FavoriteCity>();
+  selectedCity$: Observable<string>;
+  showLoading: boolean = false;
 
   private store = inject(Store);
   private ngUnsubscribe = new Subject<void>();
@@ -49,6 +46,7 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.selectedCity$ = this.store.select(selectSelectedCity);
     this.store
       .select(selectFavoriteCities)
       .pipe(takeUntil(this.ngUnsubscribe))
@@ -76,8 +74,6 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   }
 
   handleFavoriteCityClicked(cityDetails: FavoriteCity) {
-    this.showCityDetails.emit(cityDetails);
-    this.selectedCity = cityDetails.cityName;
     this.store.dispatch(setSelectedCity({ cityName: cityDetails.cityName }));
     this.searchInput = '';
   }
@@ -85,19 +81,11 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   searchCity() {
     this.showLoading = true;
     this.weatherService
-      .getYesterdayWeatherHourly(this.searchInput)
+      .checkSearchValidity(this.searchInput)
       .pipe(take(1))
       .subscribe({
-        next: (res: any) => {
+        next: () => {
           this.store.dispatch(setSelectedCity({ cityName: this.searchInput }));
-
-          this.showCityDetails.emit({
-            min: res.forecast.forecastday[0].day.mintemp_c,
-            max: res.forecast.forecastday[0].day.maxtemp_c,
-            cityName: this.searchInput,
-            currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-          });
-          this.selectedCity = this.searchInput;
           this.searchError = false;
           this.showLoading = false;
         },

@@ -76,6 +76,18 @@
       }
     }
 
+    .dayButtonsDiv {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      color: #1d2433cc;
+
+      .selectedDay {
+        border-bottom: 2px solid #7b61ff;
+        color: #1d2433cc !important;
+      }
+    }
+
     .chart {
       border: 1px solid #e1e6ef;
     }
