@@ -1,11 +1,13 @@
 export interface WeatherState {
   selectedCity: string;
   favoriteCities: string[];
-  currentData: string;
+  yesterdayHourlyData: string[];
+  lineChartLoading: boolean;
 }
 
 export const initialWeatherState: WeatherState = {
   selectedCity: null,
   favoriteCities: ['Thessaloniki', 'Athens'],
-  currentData: null
+  yesterdayHourlyData: [],
+  lineChartLoading: true
 };

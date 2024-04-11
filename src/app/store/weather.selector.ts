@@ -10,4 +10,9 @@ export const selectFavoriteCities = createSelector(weatherState, (state: Weather
 export const selectCityIsSaved = (cityName: string) =>
   createSelector(weatherState, (state: WeatherState) => state.favoriteCities.includes(cityName));
 
-export const selectCurrentWeather = createSelector(weatherState, (state: WeatherState) => state.currentData);
+export const selectYesterdayHourlyData = createSelector(
+  weatherState,
+  (state: WeatherState) => state.yesterdayHourlyData
+);
+
+export const selectLineChartIsLoading = createSelector(weatherState, (state: WeatherState) => state.lineChartLoading);

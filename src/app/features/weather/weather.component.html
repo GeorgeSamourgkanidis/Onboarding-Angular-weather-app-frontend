@@ -3,5 +3,7 @@
     <app-left-side-panel />
   </div>
 
-  <app-weather-city-details [selectedCity]="selectedCity$ | async" />
+  <ng-container *ngIf="selectedCity$ | async as selectedCity">
+    <app-weather-city-details [selectedCity]="selectedCity" />
+  </ng-container>
 </div>

@@ -14,7 +14,7 @@
 
         <span>{{ currentCityWeatherDetails.region }}, {{ currentCityWeatherDetails.country }}</span>
       </div>
-      <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved"> 
+      <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved">
         <button mat-mini-fab class="bg-white" (click)="saveUnSaveFavoriteCity(selectedCityIsSaved)">
           <mat-icon class="text-dark" [ngClass]="{ cityIsSaved: selectedCityIsSaved }">favorite</mat-icon>
         </button>
@@ -40,7 +40,7 @@
       </div>
 
       <div class="chart">
-        <div echarts [options]="lineChartOption" [loading]="lineChartLoading"></div>
+        <div echarts [options]="lineChartOption" [loading]="lineChartLoading$ | async"></div>
       </div>
     </div>
 

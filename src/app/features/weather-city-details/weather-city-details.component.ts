@@ -1,15 +1,20 @@
-import { Component, Input, OnChanges, inject, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject, SimpleChanges, OnInit, OnDestroy } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { WeatherService } from '../../services/weather.service';
-import { Observable, take, forkJoin } from 'rxjs';
+import { Observable, take, forkJoin, takeUntil, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectCityIsSaved } from '../../store/weather.selector';
+import { selectCityIsSaved, selectLineChartIsLoading, selectYesterdayHourlyData } from '../../store/weather.selector';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { LetDirective } from '@ngrx/component';
-import { saveFavoriteCitySuccess, setSelectedCity, unsaveFavoriteCitySuccess } from '../../store/weather.actions';
+import {
+  getAndSaveYesterdayHourlyWeatherData,
+  saveFavoriteCitySuccess,
+  setSelectedCity,
+  unsaveFavoriteCitySuccess
+} from '../../store/weather.actions';
 import { CityMaxTemps, CurrentCityWeatherDetails } from '../../models/weather';
 import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from '../../data/charts';
 
@@ -21,25 +26,50 @@ import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from 
   styleUrl: './weather-city-details.component.scss',
   providers: [provideEcharts()]
 })
-export class WeatherCityDetailsComponent implements OnChanges {
+export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy {
   @Input()
   selectedCity: string;
 
-  lineChartLoading = false;
-  gaugeChartLoading = false;
-  radarChartLoading = false;
-
   private store = inject(Store);
+  private ngUnsubscribe = new Subject<void>();
+
   selectedCityIsSaved$: Observable<boolean>;
   currentCityWeatherDetails: CurrentCityWeatherDetails = null;
   cityMaxTemps: CityMaxTemps = null;
 
   lineChartOption: EChartsOption = lineChartOptionData;
+  lineChartLoading$: Observable<boolean>;
   gaugeChartOption: EChartsOption = gaugeChartOptionData;
+  gaugeChartLoading = false;
   gaugeChartDay: string = 'yesterday';
   radarChartOption: EChartsOption = radarChartOptionData;
+  radarChartLoading = false;
 
   constructor(private weatherService: WeatherService) {}
+
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  ngOnInit(): void {
+    // Get lineChart loading and details
+    this.lineChartLoading$ = this.store.select(selectLineChartIsLoading);
+    this.store
+      .select(selectYesterdayHourlyData)
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((hourlyData: string[]) => {
+        this.lineChartOption = {
+          ...this.lineChartOption,
+          series: [
+            {
+              data: hourlyData,
+              type: 'line'
+            }
+          ]
+        };
+      });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedCity'].currentValue) {
@@ -73,24 +103,7 @@ export class WeatherCityDetailsComponent implements OnChanges {
   }
 
   setLineChartData(cityName: string) {
-    this.lineChartLoading = true;
-    this.weatherService
-      .getYesterdayWeather(cityName)
-      .pipe(take(1))
-      .subscribe((res: any) => {
-        this.lineChartOption = {
-          ...this.lineChartOption,
-          series: [
-            {
-              data: res.forecast.forecastday[0].hour
-                .filter((_: any, index: number) => index % 3 === 0) // 0:00 -> 3:00 -> 6:00....
-                .map((data: any) => data.temp_c),
-              type: 'line'
-            }
-          ]
-        };
-        this.lineChartLoading = false;
-      });
+    this.store.dispatch(getAndSaveYesterdayHourlyWeatherData({ cityName: cityName }));
   }
 
   setGaugeChartData(cityName: string) {

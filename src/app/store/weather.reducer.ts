@@ -1,7 +1,8 @@
 import { createReducer, on } from '@ngrx/store';
 import { initialWeatherState } from './weather.state';
 import {
-  getCurrentWeather,
+  getAndSaveYesterdayHourlyWeatherData,
+  getAndSaveYesterdayHourlyWeatherDataSuccess,
   saveFavoriteCitySuccess,
   setSelectedCity,
   unsaveFavoriteCitySuccess
@@ -9,10 +10,6 @@ import {
 
 export const weatherReducer = createReducer(
   initialWeatherState,
-  on(getCurrentWeather, state => ({
-    ...state,
-    currentData: 'test'
-  })),
   on(setSelectedCity, (state, props) => ({
     ...state,
     selectedCity: props.cityName
@@ -24,5 +21,14 @@ export const weatherReducer = createReducer(
   on(unsaveFavoriteCitySuccess, (state, props) => ({
     ...state,
     favoriteCities: state.favoriteCities.filter(cityName => cityName !== props.cityToUnsave)
+  })),
+  on(getAndSaveYesterdayHourlyWeatherData, state => ({
+    ...state,
+    lineChartLoading: true
+  })),
+  on(getAndSaveYesterdayHourlyWeatherDataSuccess, (state, props) => ({
+    ...state,
+    yesterdayHourlyData: props.hourlyData,
+    lineChartLoading: false
   }))
 );
