@@ -4,6 +4,7 @@ import {
   getAndSaveYesterdayHourlyWeatherData,
   getAndSaveYesterdayHourlyWeatherDataSuccess,
   saveFavoriteCitySuccess,
+  setFavoriteCities,
   setSelectedCity,
   unsaveFavoriteCitySuccess
 } from './weather.actions';
@@ -13,6 +14,10 @@ export const weatherReducer = createReducer(
   on(setSelectedCity, (state, props) => ({
     ...state,
     selectedCity: props.cityName
+  })),
+  on(setFavoriteCities, (state, props) => ({
+    ...state,
+    favoriteCities: props.favoriteCities
   })),
   on(saveFavoriteCitySuccess, (state, props) => ({
     ...state,

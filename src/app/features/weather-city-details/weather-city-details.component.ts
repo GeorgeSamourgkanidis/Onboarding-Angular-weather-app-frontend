@@ -11,9 +11,9 @@ import { NgClass, AsyncPipe } from '@angular/common';
 import { LetDirective } from '@ngrx/component';
 import {
   getAndSaveYesterdayHourlyWeatherData,
-  saveFavoriteCitySuccess,
+  saveFavoriteCity,
   setSelectedCity,
-  unsaveFavoriteCitySuccess
+  unsaveFavoriteCity
 } from '../../store/weather.actions';
 import { CityMaxTemps, CurrentCityWeatherDetails } from '../../models/weather';
 import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from '../../data/charts';
@@ -155,12 +155,12 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
 
   refreshRadarChart() {}
 
-  saveUnSaveFavoriteCity(isSaved: boolean) {
-    //TODO dont dispatch success when I implement backend save/unsave
+  saveUnSaveFavoriteCity(isSaved: boolean, cityName: string) {
+    //I'm not using this.selectedCity because I want to save case sensitive text
     if (isSaved) {
-      this.store.dispatch(unsaveFavoriteCitySuccess({ cityToUnsave: this.selectedCity }));
+      this.store.dispatch(unsaveFavoriteCity({ cityToUnsave: cityName }));
     } else {
-      this.store.dispatch(saveFavoriteCitySuccess({ cityToSave: this.selectedCity }));
+      this.store.dispatch(saveFavoriteCity({ cityToSave: cityName }));
     }
   }
 }

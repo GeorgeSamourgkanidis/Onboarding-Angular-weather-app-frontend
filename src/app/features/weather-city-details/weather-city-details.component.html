@@ -15,7 +15,10 @@
         <span>{{ currentCityWeatherDetails.region }}, {{ currentCityWeatherDetails.country }}</span>
       </div>
       <ng-container *ngrxLet="selectedCityIsSaved$ as selectedCityIsSaved">
-        <button mat-mini-fab class="bg-white" (click)="saveUnSaveFavoriteCity(selectedCityIsSaved)">
+        <button
+          mat-mini-fab
+          class="bg-white"
+          (click)="saveUnSaveFavoriteCity(selectedCityIsSaved, currentCityWeatherDetails.name)">
           <mat-icon class="text-dark" [ngClass]="{ cityIsSaved: selectedCityIsSaved }">favorite</mat-icon>
         </button>
       </ng-container>

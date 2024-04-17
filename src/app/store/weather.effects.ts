@@ -3,7 +3,16 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { EMPTY } from 'rxjs';
 import { map, exhaustMap, catchError } from 'rxjs/operators';
 import { WeatherService } from '../services/weather.service';
-import { getAndSaveYesterdayHourlyWeatherData, getAndSaveYesterdayHourlyWeatherDataSuccess } from './weather.actions';
+import {
+  getAndSaveYesterdayHourlyWeatherData,
+  getAndSaveYesterdayHourlyWeatherDataSuccess,
+  getFavoriteCities,
+  saveFavoriteCity,
+  saveFavoriteCitySuccess,
+  setFavoriteCities,
+  unsaveFavoriteCity,
+  unsaveFavoriteCitySuccess
+} from './weather.actions';
 
 @Injectable()
 export class WeatherEffects {
@@ -11,6 +20,54 @@ export class WeatherEffects {
     private actions$: Actions,
     private weatherService: WeatherService
   ) {}
+
+  getFavoriteCities$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getFavoriteCities),
+      exhaustMap(() =>
+        this.weatherService.getFavoriteCities().pipe(
+          map((favoriteCities: string[]) =>
+            setFavoriteCities({
+              favoriteCities: favoriteCities
+            })
+          ),
+          catchError(() => EMPTY)
+        )
+      )
+    )
+  );
+
+  saveFavoriteCities$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(saveFavoriteCity),
+      exhaustMap(action =>
+        this.weatherService.saveFavoriteCity(action.cityToSave).pipe(
+          map(() =>
+            saveFavoriteCitySuccess({
+              cityToSave: action.cityToSave
+            })
+          ),
+          catchError(() => EMPTY)
+        )
+      )
+    )
+  );
+
+  unsaveFavoriteCities$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(unsaveFavoriteCity),
+      exhaustMap(action =>
+        this.weatherService.unsaveFavoriteCity(action.cityToUnsave).pipe(
+          map(() =>
+            unsaveFavoriteCitySuccess({
+              cityToUnsave: action.cityToUnsave
+            })
+          ),
+          catchError(() => EMPTY)
+        )
+      )
+    )
+  );
 
   getYesterdayWeatherData$ = createEffect(() =>
     this.actions$.pipe(

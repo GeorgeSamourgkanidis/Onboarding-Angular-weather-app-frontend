@@ -8,7 +8,9 @@ export const selectSelectedCity = createSelector(weatherState, (state: WeatherSt
 export const selectFavoriteCities = createSelector(weatherState, (state: WeatherState) => state.favoriteCities);
 
 export const selectCityIsSaved = (cityName: string) =>
-  createSelector(weatherState, (state: WeatherState) => state.favoriteCities.includes(cityName));
+  createSelector(weatherState, (state: WeatherState) =>
+    state.favoriteCities.some(fc => fc.toLowerCase() === cityName.toLowerCase())
+  );
 
 export const selectYesterdayHourlyData = createSelector(
   weatherState,

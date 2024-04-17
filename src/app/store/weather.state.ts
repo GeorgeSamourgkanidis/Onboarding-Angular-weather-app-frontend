@@ -7,7 +7,7 @@ export interface WeatherState {
 
 export const initialWeatherState: WeatherState = {
   selectedCity: null,
-  favoriteCities: ['Thessaloniki', 'Athens'],
+  favoriteCities: [],
   yesterdayHourlyData: [],
   lineChartLoading: true
 };
