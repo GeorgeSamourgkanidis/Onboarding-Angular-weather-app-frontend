@@ -1,4 +1,6 @@
 export interface WeatherState {
+  username: string;
+  isLoggedIn: boolean;
   selectedCity: string;
   favoriteCities: string[];
   yesterdayHourlyData: string[];
@@ -6,6 +8,8 @@ export interface WeatherState {
 }
 
 export const initialWeatherState: WeatherState = {
+  username: null,
+  isLoggedIn: false,
   selectedCity: null,
   favoriteCities: [],
   yesterdayHourlyData: [],

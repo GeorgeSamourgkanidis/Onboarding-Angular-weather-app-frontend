@@ -1,0 +1,15 @@
+<div class="loginContainer">
+  <div>
+    Name:
+    <input [(ngModel)]="user.username" placeholder="Name" />
+  </div>
+  <div>
+    Password:
+    <input [(ngModel)]="user.password" placeholder="Password" type="password" />
+  </div>
+  <div>
+    <button mat-button class="bg-light" (click)="register()">Register</button>
+    <button mat-button class="bg-success text-light ms-3" (click)="login()">Login</button>
+  </div>
+  <p *ngIf="error" class="text-danger">{{ error }}</p>
+</div>

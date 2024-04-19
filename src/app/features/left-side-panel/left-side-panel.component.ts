@@ -10,8 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
 import { Observable, Subject, take, takeUntil } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectFavoriteCities, selectSelectedCity } from '../../store/weather.selector';
-import { setSelectedCity } from '../../store/weather.actions';
+import { selectFavoriteCities, selectIsLoggedIn, selectSelectedCity } from '../../store/weather.selector';
+import { getFavoriteCities, setFavoriteCities, setSelectedCity } from '../../store/weather.actions';
 
 @Component({
   selector: 'app-left-side-panel',
@@ -36,6 +36,7 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
 
   private store = inject(Store);
   private ngUnsubscribe = new Subject<void>();
+  isLoggedIn$: Observable<boolean>;
   favoriteCitiesData: FavoriteCity[] = [];
 
   constructor(private weatherService: WeatherService) {}
@@ -46,6 +47,15 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
+    this.isLoggedIn$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((logged: boolean) => {
+      if (logged) {
+        this.store.dispatch(getFavoriteCities());
+      } else {
+        // on logout delete favoriteCities
+        this.store.dispatch(setFavoriteCities({ favoriteCities: [] }));
+      }
+    });
     this.selectedCity$ = this.store.select(selectSelectedCity);
     this.store
       .select(selectFavoriteCities)

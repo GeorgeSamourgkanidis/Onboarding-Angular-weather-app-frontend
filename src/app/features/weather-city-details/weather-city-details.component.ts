@@ -6,7 +6,12 @@ import { EChartsOption } from 'echarts';
 import { WeatherService } from '../../services/weather.service';
 import { Observable, take, forkJoin, takeUntil, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectCityIsSaved, selectLineChartIsLoading, selectYesterdayHourlyData } from '../../store/weather.selector';
+import {
+  selectCityIsSaved,
+  selectIsLoggedIn,
+  selectLineChartIsLoading,
+  selectYesterdayHourlyData
+} from '../../store/weather.selector';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { LetDirective } from '@ngrx/component';
 import {
@@ -33,6 +38,7 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
   private store = inject(Store);
   private ngUnsubscribe = new Subject<void>();
 
+  isLoggedIn$: Observable<boolean>;
   selectedCityIsSaved$: Observable<boolean>;
   currentCityWeatherDetails: CurrentCityWeatherDetails = null;
   cityMaxTemps: CityMaxTemps = null;
@@ -53,6 +59,7 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
   }
 
   ngOnInit(): void {
+    this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
     // Get lineChart loading and details
     this.lineChartLoading$ = this.store.select(selectLineChartIsLoading);
     this.store

@@ -7,7 +7,7 @@
   justify-content: center;
   align-items: center;
   font-family: Inter;
- 
+
   font-weight: 700;
 
   .logoImg {
@@ -21,6 +21,10 @@
 
 .shadowBottom {
   box-shadow: 0 1px 1px #e1e6ef;
+}
+
+.cursorPointer {
+  cursor: pointer;
 }
 
 @media (max-width: 576px) {

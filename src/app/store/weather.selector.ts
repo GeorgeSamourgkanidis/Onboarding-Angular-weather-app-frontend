@@ -3,6 +3,8 @@ import { WeatherState } from './weather.state';
 
 const weatherState = createFeatureSelector<WeatherState>('weather');
 
+export const selectIsLoggedIn = createSelector(weatherState, (state: WeatherState) => state.isLoggedIn);
+
 export const selectSelectedCity = createSelector(weatherState, (state: WeatherState) => state.selectedCity);
 
 export const selectFavoriteCities = createSelector(weatherState, (state: WeatherState) => state.favoriteCities);

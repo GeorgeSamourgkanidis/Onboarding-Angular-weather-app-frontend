@@ -2,22 +2,40 @@ import { Component, OnInit, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
-import { WeatherService } from './services/weather.service';
 import { Store } from '@ngrx/store';
-import { getFavoriteCities } from './store/weather.actions';
+import { setIsLoggedIn, setUsername } from './store/weather.actions';
+import { Observable, take } from 'rxjs';
+import { selectIsLoggedIn } from './store/weather.selector';
+import { AsyncPipe, NgIf } from '@angular/common';
+import { LoginComponent } from './core/login/login.component';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  imports: [NgIf, AsyncPipe, RouterOutlet, HeaderComponent, FooterComponent, LoginComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
 export class AppComponent implements OnInit {
-  constructor(private weatherService: WeatherService) {}
+  constructor(private authService: AuthService) {}
+
   private store = inject(Store);
+  isLoggedIn$: Observable<boolean>;
 
   ngOnInit(): void {
-    this.store.dispatch(getFavoriteCities());
+    this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
+    this.authService
+      .getMe()
+      .pipe(take(1))
+      .subscribe({
+        next: (name: string) => {
+          this.store.dispatch(setUsername({ username: name }));
+          this.store.dispatch(setIsLoggedIn({ isLoggedIn: true }));
+        },
+        error: () => {
+          this.store.dispatch(setIsLoggedIn({ isLoggedIn: false }));
+        }
+      });
   }
 }

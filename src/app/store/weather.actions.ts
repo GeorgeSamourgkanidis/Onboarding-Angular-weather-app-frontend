@@ -1,5 +1,7 @@
 import { createAction, props } from '@ngrx/store';
 
+export const setUsername = createAction('setUsername', props<{ username: string }>());
+export const setIsLoggedIn = createAction('setIsLoggedIn', props<{ isLoggedIn: boolean }>());
 export const setSelectedCity = createAction('setSelectedCity', props<{ cityName: string }>());
 export const getFavoriteCities = createAction('getFavoriteCities');
 export const setFavoriteCities = createAction('setFavoriteCities', props<{ favoriteCities: string[] }>());
