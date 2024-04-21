@@ -1,42 +1,61 @@
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { User } from '../../models/user';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs';
+import { Subject, take, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { setIsLoggedIn, setUsername } from '../../store/weather.actions';
 import { Store } from '@ngrx/store';
 import { NgIf } from '@angular/common';
+import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, NgIf],
+  imports: [FormsModule, MatButtonModule, NgIf, GoogleSigninButtonModule, SocialLoginModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
-export class LoginComponent {
-  user: User = {
+export class LoginComponent implements OnInit, OnDestroy {
+  userInput: User = {
     username: '',
     password: ''
   };
   error: string;
   private store = inject(Store);
+  private ngUnsubscribe = new Subject<void>();
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private socialAuthService: SocialAuthService
   ) {}
 
-  register() {
+  ngOnDestroy(): void {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  ngOnInit(): void {
+    this.socialAuthService.authState.pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
+      if (user) {
+        this.socialLogin({ username: user.email, password: user.idToken });
+      }
+    });
+  }
+
+  register(user: User) {
+    console.log('register');
+
     this.authService
-      .register(this.user)
+      .register(user)
       .pipe(take(1))
       .subscribe({
         next: () => {
           this.error = null;
-          this.login();
+          this.login(user);
         },
         error: error => {
           this.error = error.error;
@@ -44,20 +63,39 @@ export class LoginComponent {
       });
   }
 
-  login() {
+  login(user: User) {
     this.authService
-      .login(this.user)
+      .login(user)
       .pipe(take(1))
       .subscribe({
         next: (token: string) => {
-          this.error = null;
-          sessionStorage.setItem('authToken', token);
-          this.store.dispatch(setUsername({ username: this.user.username }));
-          this.store.dispatch(setIsLoggedIn({ isLoggedIn: true }));
-          this.router.navigate(['']);
+          this.loginSuccess(token, user.username);
         },
         error: error => {
           this.error = error.error;
+        }
+      });
+  }
+
+  loginSuccess(token: string, username: string) {
+    this.error = null;
+    sessionStorage.setItem('authToken', token);
+    this.store.dispatch(setUsername({ username: username }));
+    this.store.dispatch(setIsLoggedIn({ isLoggedIn: true }));
+    this.router.navigate(['']);
+  }
+
+  socialLogin(user: User) {
+    // login using email as username and idToken as password or else register and login
+    this.authService
+      .login(user)
+      .pipe(take(1))
+      .subscribe({
+        next: (token: string) => {
+          this.loginSuccess(token, user.username);
+        },
+        error: () => {
+          this.register(user);
         }
       });
   }

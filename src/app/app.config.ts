@@ -10,6 +10,8 @@ import { provideEffects } from '@ngrx/effects';
 import { WeatherEffects } from './store/weather.effects';
 import { weatherReducer } from './store/weather.reducer';
 import { AuthInterceptor } from './services/auth.interceptor';
+import { SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,6 +20,23 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([AuthInterceptor])),
     provideStore({ weather: weatherReducer }),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
-    provideEffects([WeatherEffects])
+    provideEffects([WeatherEffects]),
+    {
+      provide: 'SocialAuthServiceConfig',
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(environment.clientId, {
+              oneTapEnabled: false
+            })
+          }
+        ],
+        onError: err => {
+          console.error(err);
+        }
+      } as SocialAuthServiceConfig
+    }
   ]
 };
