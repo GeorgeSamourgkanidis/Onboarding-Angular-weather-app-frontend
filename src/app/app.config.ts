@@ -10,7 +10,7 @@ import { provideEffects } from '@ngrx/effects';
 import { WeatherEffects } from './store/weather.effects';
 import { weatherReducer } from './store/weather.reducer';
 import { AuthInterceptor } from './services/auth.interceptor';
-import { SocialAuthServiceConfig, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+import { SocialAuthServiceConfig, GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
@@ -28,7 +28,13 @@ export const appConfig: ApplicationConfig = {
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(environment.clientId, {
+            provider: new GoogleLoginProvider(environment.googleClientId, {
+              oneTapEnabled: false
+            })
+          },
+          {
+            id: FacebookLoginProvider.PROVIDER_ID,
+            provider: new FacebookLoginProvider(environment.facebookClientId, {
               oneTapEnabled: false
             })
           }

@@ -12,5 +12,10 @@
     <button mat-button class="bg-success text-light ms-3" (click)="login(userInput)">Login</button>
   </div>
   <p *ngIf="error" class="text-danger">{{ error }}</p>
-  <asl-google-signin-button type="standard" size="medium"> </asl-google-signin-button>
+  <div class="socialButtons">
+    <asl-google-signin-button type="standard" size="medium"> </asl-google-signin-button>
+    <button class="facebookBtn" (click)="signInWithFB()">
+      <img src="assets/images/facebook.png" alt="" />
+    </button>
+  </div>
 </div>

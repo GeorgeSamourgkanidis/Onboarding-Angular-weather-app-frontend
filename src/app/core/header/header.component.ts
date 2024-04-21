@@ -54,7 +54,6 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.socialAuthService.signOut();
     sessionStorage.removeItem('authToken');
     this.store.dispatch(setIsLoggedIn({ isLoggedIn: false }));
   }

@@ -7,4 +7,19 @@
   justify-content: center;
   align-items: center;
   gap: 1rem;
+
+  .socialButtons {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .facebookBtn {
+      border: none;
+      background: transparent;
+      border-radius: 5px;
+      img {
+        width: 110px;
+      }
+    }
+  }
 }

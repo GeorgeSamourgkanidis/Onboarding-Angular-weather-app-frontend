@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { setIsLoggedIn, setUsername } from '../../store/weather.actions';
 import { Store } from '@ngrx/store';
 import { NgIf } from '@angular/common';
-import { GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { FacebookLoginProvider, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
 
 @Component({
@@ -41,14 +41,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.socialAuthService.authState.pipe(takeUntil(this.ngUnsubscribe)).subscribe(user => {
       if (user) {
-        this.socialLogin({ username: user.email, password: user.idToken });
+        // clear socialAuthService logged status because it bugs
+        this.socialAuthService.signOut();
+        // if email doesnt exist set name and if idToken doesnt exist set id
+        this.socialLogin({ username: user.email ?? user.name, password: user.idToken ?? user.id });
       }
     });
   }
 
   register(user: User) {
-    console.log('register');
-
     this.authService
       .register(user)
       .pipe(take(1))
@@ -98,5 +99,9 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.register(user);
         }
       });
+  }
+
+  signInWithFB(): void {
+    this.socialAuthService.signIn(FacebookLoginProvider.PROVIDER_ID);
   }
 }
