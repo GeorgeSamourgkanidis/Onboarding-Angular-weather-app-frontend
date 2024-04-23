@@ -9,12 +9,12 @@ import { setIsLoggedIn, setUsername } from '../../store/weather.actions';
 import { Store } from '@ngrx/store';
 import { NgIf } from '@angular/common';
 import { FacebookLoginProvider, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
-import { SocialAuthService, SocialLoginModule } from '@abacritt/angularx-social-login';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, MatButtonModule, NgIf, GoogleSigninButtonModule, SocialLoginModule],
+  imports: [FormsModule, MatButtonModule, NgIf, GoogleSigninButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })

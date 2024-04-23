@@ -13,6 +13,31 @@ import { AuthInterceptor } from './services/auth.interceptor';
 import { SocialAuthServiceConfig, GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { environment } from '../environments/environment';
 
+const socialAuthServiceConfig = {
+  autoLogin: false,
+  providers: [
+    {
+      id: GoogleLoginProvider.PROVIDER_ID,
+      provider: new GoogleLoginProvider(environment.googleClientId, {
+        oneTapEnabled: false
+      })
+    },
+    {
+      id: FacebookLoginProvider.PROVIDER_ID,
+      provider: new FacebookLoginProvider(environment.facebookClientId, {
+        oneTapEnabled: false
+      })
+    }
+  ],
+  onError: err => {
+    console.error(err);
+  }
+} as SocialAuthServiceConfig;
+
+export function provideConfig() {
+  return socialAuthServiceConfig;
+}
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
@@ -23,26 +48,7 @@ export const appConfig: ApplicationConfig = {
     provideEffects([WeatherEffects]),
     {
       provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(environment.googleClientId, {
-              oneTapEnabled: false
-            })
-          },
-          {
-            id: FacebookLoginProvider.PROVIDER_ID,
-            provider: new FacebookLoginProvider(environment.facebookClientId, {
-              oneTapEnabled: false
-            })
-          }
-        ],
-        onError: err => {
-          console.error(err);
-        }
-      } as SocialAuthServiceConfig
+      useValue: provideConfig()
     }
   ]
 };

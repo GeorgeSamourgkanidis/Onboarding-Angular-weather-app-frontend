@@ -3,7 +3,7 @@
 
   <mat-form-field class="searchBox" appearance="outline">
     <mat-icon matIconPrefix>search</mat-icon>
-    <input type="text" matInput placeholder="Search Location" (keyup.enter)="searchCity()" [(ngModel)]="searchInput" />
+    <input id="searchInput" type="text" matInput placeholder="Search Location" (keyup.enter)="searchCity()" [(ngModel)]="searchInput" />
     @if (!showLoading) {
       <button mat-button matSuffix (click)="clearSearch()"><mat-icon>close</mat-icon></button>
     } @else {
