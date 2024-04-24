@@ -3,6 +3,7 @@
   flex-direction: column;
 
   .title {
+    line-height: 40px;
     font-size: 24px;
   }
 
@@ -21,7 +22,7 @@
     padding: 16px;
     background-color: white;
     display: flex;
-    border: solid 1px #cbd2e1;
+    border: solid 2px #e1e6ef;
     border-radius: 5px;
     cursor: pointer;
     align-items: center;
@@ -36,7 +37,7 @@
     }
 
     &:hover {
-      padding: 14.5px; //border increase height/width so I reduced padding
+      padding: 15px; //border increase height/width so I reduced padding
       border: solid 3px black;
     }
   }
@@ -46,7 +47,7 @@
     border-color: #0a6fc2;
   }
 
-  .gap4 {
+  .gap3 {
     gap: 1rem;
   }
 

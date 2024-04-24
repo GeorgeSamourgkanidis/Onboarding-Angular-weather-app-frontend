@@ -16,7 +16,8 @@
       </div>
       <ng-container *ngrxLet="{ isLoggedIn: isLoggedIn$, selectedCityIsSaved: selectedCityIsSaved$ } as context">
         <button
-          [attr.disabled]="context.isLoggedIn"
+          [attr.disabled]="!context.isLoggedIn"
+          [disabled]="!context.isLoggedIn"
           mat-mini-fab
           class="bg-white"
           (click)="saveUnSaveFavoriteCity(context.selectedCityIsSaved, currentCityWeatherDetails.name)">
@@ -25,7 +26,7 @@
       </ng-container>
     </div>
 
-    <div class="cityWeather mt-4">
+    <div class="cityWeather mt-2">
       <div class="currentTemperature">
         <h2 class="fw-bold">{{ currentCityWeatherDetails.current }}&deg;C</h2>
         <span>Day {{ currentCityWeatherDetails.max }}&deg;C - Night {{ currentCityWeatherDetails.min }}&deg;C</span>
@@ -40,7 +41,7 @@
       </div>
 
       <div class="dayButtonsDiv">
-        <button mat-button disabled class="selectedDay rounded-0">Yesterday</button>
+        <button mat-button disabled class="selectedDay dayButton">Yesterday</button>
       </div>
 
       <div class="chart">
@@ -56,27 +57,15 @@
 
       <div class="dayButtonsDiv">
         <div class="d-flex">
-          <button
-            mat-button
-            class="rounded-0"
-            (click)="setGaugeChartDay('yesterday')"
-            [ngClass]="{ selectedDay: gaugeChartDay === 'yesterday' }">
-            Yesterday
-          </button>
-          <button
-            mat-button
-            class="rounded-0"
-            (click)="setGaugeChartDay('today')"
-            [ngClass]="{ selectedDay: gaugeChartDay === 'today' }">
-            Today
-          </button>
-          <button
-            mat-button
-            class="rounded-0"
-            (click)="setGaugeChartDay('tomorrow')"
-            [ngClass]="{ selectedDay: gaugeChartDay === 'tomorrow' }">
-            Tomorrow
-          </button>
+          @for (day of chartDay; track $index) {
+            <button
+              mat-button
+              class="dayButton"
+              (click)="setGaugeChartDay(day)"
+              [ngClass]="{ selectedDay: gaugeChartDay === day }">
+              {{ day | titlecase }}
+            </button>
+          }
         </div>
       </div>
 
@@ -89,6 +78,20 @@
       <div class="chartTitleDiv">
         <span class="chartTitle">Air Quality Index</span>
         <button mat-button (click)="refreshRadarChart()"><mat-icon>sync</mat-icon></button>
+      </div>
+
+      <div class="dayButtonsDiv">
+        <div class="d-flex">
+          @for (day of chartDay; track $index) {
+            <button
+              mat-button
+              class="dayButton"
+              (click)="setRadarChartDay(day)"
+              [ngClass]="{ selectedDay: radarChartDay === day }">
+              {{ day | titlecase }}
+            </button>
+          }
+        </div>
       </div>
 
       <div class="chart">

@@ -20,3 +20,4 @@ export interface CityMaxTemps {
   today: number;
   tomorrow: number;
 }
+export type maxTempDay = 'yesterday' | 'today' | 'tomorrow';

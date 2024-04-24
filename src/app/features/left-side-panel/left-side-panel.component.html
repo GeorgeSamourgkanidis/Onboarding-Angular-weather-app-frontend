@@ -1,9 +1,15 @@
 <div class="leftSideContainer">
-  <span class="title mb-3">Favorite Locations</span>
+  <span class="title mb-2">Favorite Locations</span>
 
   <mat-form-field class="searchBox" appearance="outline">
     <mat-icon matIconPrefix>search</mat-icon>
-    <input id="searchInput" type="text" matInput placeholder="Search Location" (keyup.enter)="searchCity()" [(ngModel)]="searchInput" />
+    <input
+      id="searchInput"
+      type="text"
+      matInput
+      placeholder="Search Location"
+      (keyup.enter)="searchCity()"
+      [(ngModel)]="searchInput" />
     @if (!showLoading) {
       <button mat-button matSuffix (click)="clearSearch()"><mat-icon>close</mat-icon></button>
     } @else {
@@ -17,14 +23,14 @@
   @for (favoriteCityData of favoriteCitiesData; track favoriteCityData) {
     <div
       class="favoriteCity mb-3"
-      [ngClass]="{ selectedCity: (selectedCity$ | async) === favoriteCityData.cityName }"
+      [ngClass]="{ selectedCity: (selectedCity$ | async)?.toLowerCase() === favoriteCityData.cityName?.toLowerCase() }"
       (click)="handleFavoriteCityClicked(favoriteCityData)">
-      <div class="details gap4 align-items-center">
-        <div class="d-flex gap4 flex-wrap align-items-center">
+      <div class="w-100 details align-items-center">
+        <div class="w-50 d-flex justify-content-between gap2 flex-wrap align-items-center pe-3">
           <img class="weatherIcon" [src]="favoriteCityData.currentWeatherIcon" alt="" />
           <div class="fw-bold">{{ favoriteCityData.max }}&deg;C - {{ favoriteCityData.min }}&deg;C</div>
         </div>
-        <div class="d-flex gap4">
+        <div class="d-flex gap3">
           <span class="separator">|</span>
           <span>{{ favoriteCityData.cityName }}</span>
         </div>

@@ -9,6 +9,7 @@
     justify-content: space-between;
     align-items: center;
     font-size: 24px;
+    padding: 0 0.5rem;
 
     .backButton {
       transform: scale(2);
@@ -27,6 +28,8 @@
 
   @media (max-width: 1023px) {
     .titleDiv {
+      padding: 0;
+
       .title {
         flex-direction: column;
 
@@ -42,6 +45,9 @@
     padding: 24px;
     background: white;
     border-radius: 5px;
+    background-image: url('../../../assets/images/weatherBg.png');
+    background-size: cover;
+    background-position: center;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -57,6 +63,7 @@
   .chartDiv {
     padding: 24px;
     background-color: white;
+    border: solid 1px #e1e6ef;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -81,6 +88,15 @@
       display: flex;
       justify-content: center;
       color: #1d2433cc;
+
+      .dayButton {
+        margin-bottom: 0.5rem;
+        border-radius: 0;
+        padding: 0;
+        height: fit-content;
+        font-size: 1rem !important;
+        letter-spacing: 0;
+      }
 
       .selectedDay {
         border-bottom: 2px solid #7b61ff;

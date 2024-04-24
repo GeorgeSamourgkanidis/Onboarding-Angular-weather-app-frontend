@@ -7,15 +7,17 @@
   justify-content: center;
   align-items: center;
   font-family: Inter;
-
   font-weight: 700;
 
   .logoImg {
     width: 152px;
   }
 
-  .linkColor {
-    color: #1d2433 !important;
+  .services {
+    gap: 1rem;
+    .linkColor {
+      color: #1d2433 !important;
+    }
   }
 }
 
@@ -34,5 +36,9 @@
     .logoImg {
       margin: 0 auto;
     }
+  }
+
+  .services {
+    gap: 0 !important;
   }
 }

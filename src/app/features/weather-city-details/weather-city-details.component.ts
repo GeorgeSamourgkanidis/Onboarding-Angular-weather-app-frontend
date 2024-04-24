@@ -12,7 +12,7 @@ import {
   selectLineChartIsLoading,
   selectYesterdayHourlyData
 } from '../../store/weather.selector';
-import { NgClass, AsyncPipe } from '@angular/common';
+import { NgClass, AsyncPipe, TitleCasePipe } from '@angular/common';
 import { LetDirective } from '@ngrx/component';
 import {
   getAndSaveYesterdayHourlyWeatherData,
@@ -20,13 +20,13 @@ import {
   setSelectedCity,
   unsaveFavoriteCity
 } from '../../store/weather.actions';
-import { CityMaxTemps, CurrentCityWeatherDetails } from '../../models/weather';
+import { CityMaxTemps, CurrentCityWeatherDetails, maxTempDay } from '../../models/weather';
 import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from '../../data/charts';
 
 @Component({
   selector: 'app-weather-city-details',
   standalone: true,
-  imports: [LetDirective, NgClass, AsyncPipe, MatIconModule, MatButtonModule, NgxEchartsDirective],
+  imports: [TitleCasePipe, LetDirective, NgClass, AsyncPipe, MatIconModule, MatButtonModule, NgxEchartsDirective],
   templateUrl: './weather-city-details.component.html',
   styleUrl: './weather-city-details.component.scss',
   providers: [provideEcharts()]
@@ -48,8 +48,11 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
   gaugeChartOption: EChartsOption = gaugeChartOptionData;
   gaugeChartLoading = false;
   gaugeChartDay: string = 'yesterday';
+  radarChartDay: string = 'yesterday';
   radarChartOption: EChartsOption = radarChartOptionData;
   radarChartLoading = false;
+
+  chartDay: maxTempDay[] = ['yesterday', 'today', 'tomorrow'];
 
   constructor(private weatherService: WeatherService) {}
 
@@ -131,7 +134,7 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
       });
   }
 
-  setGaugeChartDay(day: 'yesterday' | 'today' | 'tomorrow') {
+  setGaugeChartDay(day: maxTempDay) {
     this.gaugeChartDay = day;
     this.gaugeChartOption = {
       ...this.gaugeChartOption,
@@ -158,6 +161,10 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
 
   refreshGaugeChart() {
     this.setGaugeChartData(this.selectedCity);
+  }
+
+  setRadarChartDay(day: maxTempDay) {
+    this.radarChartDay = day;
   }
 
   refreshRadarChart() {}
