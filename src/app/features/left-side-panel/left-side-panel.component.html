@@ -2,7 +2,7 @@
   <span class="title mb-2">Favorite Locations</span>
 
   <mat-form-field class="searchBox" appearance="outline">
-    <mat-icon matIconPrefix>search</mat-icon>
+    <mat-icon matIconPrefix class="p-0">search</mat-icon>
     <input
       id="searchInput"
       type="text"
@@ -11,7 +11,7 @@
       (keyup.enter)="searchCity()"
       [(ngModel)]="searchInput" />
     @if (!showLoading) {
-      <button mat-button matSuffix (click)="clearSearch()"><mat-icon>close</mat-icon></button>
+      <button class="searchClearButton" mat-button matSuffix (click)="clearSearch()"><mat-icon>close</mat-icon></button>
     } @else {
       <button mat-button matSuffix>
         <mat-spinner color="primary" diameter="20"></mat-spinner>
@@ -29,16 +29,19 @@
         }"
         (click)="handleFavoriteCityClicked(favoriteCityData)">
         <div class="w-100 details align-items-center">
-          <div class="w-50 d-flex justify-content-between gap2 flex-wrap align-items-center pe-3">
+          <div class="favoriteCityLeftSide">
             <img class="weatherIcon" [src]="favoriteCityData.currentWeatherIcon" alt="" />
             <div class="fw-bold">{{ favoriteCityData.max }}&deg;C - {{ favoriteCityData.min }}&deg;C</div>
           </div>
-          <div class="d-flex gap3">
-            <span class="separator">|</span>
-            <span>{{ favoriteCityData.cityName }}</span>
+          <div class="favoriteCityRightSide">
+            <div>
+              <span class="separator">|</span>
+              <span>{{ favoriteCityData.cityName }}</span>
+            </div>
+
+            <mat-icon class="ms-auto">chevron_right</mat-icon>
           </div>
         </div>
-        <mat-icon class="ms-auto">chevron_right</mat-icon>
       </div>
     }
   </ng-container>

@@ -15,11 +15,26 @@
     ::ng-deep .mat-mdc-form-field-flex {
       background-color: white;
     }
+
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      padding: 10px 14px;
+      background-color: white;
+    }
+
+    .searchClearButton {
+      padding: 0;
+      height: unset !important;
+      min-width: unset !important;
+      mat-icon {
+        font-size: 20px;
+      }
+    }
   }
 
   .favoriteCity {
     width: 100%;
-    padding: 16px;
+    max-width: 380px;
+    padding: 1rem;
     background-color: white;
     display: flex;
     border: solid 2px #e1e6ef;
@@ -28,12 +43,32 @@
     align-items: center;
     justify-content: space-between;
 
-    .weatherIcon {
-      width: 35px;
-    }
-
     .details {
       display: flex;
+
+      .favoriteCityLeftSide {
+        width: 50%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        padding-right: 1rem;
+
+        .weatherIcon {
+          width: 35px;
+        }
+      }
+
+      .favoriteCityRightSide {
+        width: 50%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .separator {
+          padding-right: 1rem;
+        }
+      }
     }
 
     &:hover {
@@ -47,19 +82,45 @@
     border-color: #0a6fc2;
   }
 
-  .gap3 {
-    gap: 1rem;
-  }
-
-  @media (max-width: 400px) {
+  @media (max-width: 430px) {
     .favoriteCity {
       .details {
         flex-direction: column;
-      }
+        .favoriteCityLeftSide {
+          width: 100% !important;
+          justify-content: center;
+        }
 
-      .separator {
-        display: none;
+        .favoriteCityRightSide {
+          width: 100% !important;
+          justify-content: center;
+          .separator {
+            display: none;
+          }
+          mat-icon {
+            margin: 0 !important;
+          }
+        }
       }
     }
+  }
+
+  @media (max-width: 500px) {
+    .favoriteCity {
+      .favoriteCityLeftSide {
+        padding-right: 0.5rem !important;
+      }
+    }
+
+    .separator {
+      padding-right: 0.5rem !important;
+    }
+  }
+}
+
+@media (max-width: 1023px) {
+  .leftSideContainer {
+    max-width: 380px;
+    margin: 0 auto;
   }
 }
