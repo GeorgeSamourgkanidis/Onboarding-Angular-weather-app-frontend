@@ -1,4 +1,4 @@
-import { ApplicationConfig, isDevMode } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, inject, isDevMode } from '@angular/core';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -12,6 +12,7 @@ import { weatherReducer } from './store/weather.reducer';
 import { AuthInterceptor } from './services/auth.interceptor';
 import { SocialAuthServiceConfig, GoogleLoginProvider, FacebookLoginProvider } from '@abacritt/angularx-social-login';
 import { environment } from '../environments/environment';
+import { InitializerService } from './services/initializer.service';
 
 const socialAuthServiceConfig = {
   autoLogin: false,
@@ -46,6 +47,14 @@ export const appConfig: ApplicationConfig = {
     provideStore({ weather: weatherReducer }),
     provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     provideEffects([WeatherEffects]),
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      useFactory: () => {
+        const initializerService = inject(InitializerService);
+        return () => initializerService.checkIfAuthorized();
+      }
+    },
     {
       provide: 'SocialAuthServiceConfig',
       useValue: provideConfig()
