@@ -4,18 +4,20 @@ import { MatIconModule } from '@angular/material/icon';
 import { NgxEchartsDirective, provideEcharts } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { WeatherService } from '../../services/weather.service';
-import { Observable, take, forkJoin, takeUntil, Subject } from 'rxjs';
+import { Observable, forkJoin, takeUntil, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
 import {
   selectCityIsSaved,
+  selectCurrentCityWeatherDetails,
   selectIsLoggedIn,
   selectLineChartIsLoading,
   selectYesterdayHourlyData
 } from '../../store/weather.selector';
-import { NgClass, AsyncPipe, TitleCasePipe } from '@angular/common';
+import { NgClass, AsyncPipe, TitleCasePipe, NgIf } from '@angular/common';
 import { LetDirective } from '@ngrx/component';
 import {
   getAndSaveYesterdayHourlyWeatherData,
+  getCurrentCityWeatherDetails,
   saveFavoriteCity,
   setSelectedCity,
   unsaveFavoriteCity
@@ -26,7 +28,7 @@ import { gaugeChartOptionData, lineChartOptionData, radarChartOptionData } from 
 @Component({
   selector: 'app-weather-city-details',
   standalone: true,
-  imports: [TitleCasePipe, LetDirective, NgClass, AsyncPipe, MatIconModule, MatButtonModule, NgxEchartsDirective],
+  imports: [TitleCasePipe, LetDirective, NgClass, NgIf, AsyncPipe, MatIconModule, MatButtonModule, NgxEchartsDirective],
   templateUrl: './weather-city-details.component.html',
   styleUrl: './weather-city-details.component.scss',
   providers: [provideEcharts()]
@@ -40,7 +42,7 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
 
   isLoggedIn$: Observable<boolean>;
   selectedCityIsSaved$: Observable<boolean>;
-  currentCityWeatherDetails: CurrentCityWeatherDetails = null;
+  currentCityWeatherDetails$: Observable<CurrentCityWeatherDetails>;
   cityMaxTemps: CityMaxTemps = null;
 
   lineChartOption: EChartsOption = lineChartOptionData;
@@ -48,7 +50,6 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
   gaugeChartOption: EChartsOption = gaugeChartOptionData;
   gaugeChartLoading = false;
   gaugeChartDay: string = 'yesterday';
-  radarChartDay: string = 'yesterday';
   radarChartOption: EChartsOption = radarChartOptionData;
   radarChartLoading = false;
 
@@ -79,37 +80,22 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
           ]
         };
       });
+    this.currentCityWeatherDetails$ = this.store.select(selectCurrentCityWeatherDetails);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['selectedCity'].currentValue) {
       const city = changes['selectedCity'].currentValue;
       this.selectedCityIsSaved$ = this.store.select(selectCityIsSaved(city));
-      this.setCurrentCityDetails(city);
+      this.store.dispatch(getCurrentCityWeatherDetails({ cityName: city }));
       this.setLineChartData(city);
       this.setGaugeChartData(city);
+      this.setRadarChartData(city);
     }
   }
 
   handleResetSelectedCity() {
     this.store.dispatch(setSelectedCity(null));
-  }
-
-  setCurrentCityDetails(cityName: string) {
-    this.weatherService
-      .getTodayForecast(cityName)
-      .pipe(take(1))
-      .subscribe((res: any) => {
-        this.currentCityWeatherDetails = {
-          min: res.forecast.forecastday[0].day.mintemp_c,
-          max: res.forecast.forecastday[0].day.maxtemp_c,
-          current: res.current.temp_c,
-          name: res.location.name,
-          region: res.location.region,
-          country: res.location.country,
-          currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-        };
-      });
   }
 
   setLineChartData(cityName: string) {
@@ -121,17 +107,15 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
     forkJoin(
       this.weatherService.getYesterdayWeather(cityName),
       this.weatherService.getTodayAndTomorrowForecast(cityName)
-    )
-      .pipe(take(1))
-      .subscribe((res: any) => {
-        this.cityMaxTemps = {
-          yesterday: res[0].forecast.forecastday[0].day.maxtemp_c,
-          today: res[1].forecast.forecastday[0].day.maxtemp_c,
-          tomorrow: res[1].forecast.forecastday[1].day.maxtemp_c
-        };
-        this.setGaugeChartDay('yesterday');
-        this.gaugeChartLoading = false;
-      });
+    ).subscribe((res: any) => {
+      this.cityMaxTemps = {
+        yesterday: res[0].forecast.forecastday[0].day.maxtemp_c,
+        today: res[1].forecast.forecastday[0].day.maxtemp_c,
+        tomorrow: res[1].forecast.forecastday[1].day.maxtemp_c
+      };
+      this.setGaugeChartDay('yesterday');
+      this.gaugeChartLoading = false;
+    });
   }
 
   setGaugeChartDay(day: maxTempDay) {
@@ -155,6 +139,36 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
     };
   }
 
+  setRadarChartData(cityName: string) {
+    this.radarChartLoading = true;
+    this.weatherService.getTodayAndTomorrowForecast(cityName).subscribe((res: any) => {
+      const airQuality = res.current.air_quality;
+      this.radarChartOption = {
+        ...this.radarChartOption,
+        series: [
+          {
+            type: 'radar',
+            data: [
+              {
+                value: [
+                  airQuality.co,
+                  airQuality.no2,
+                  airQuality.o3,
+                  airQuality.so2,
+                  airQuality.pm2_5,
+                  airQuality.pm10,
+                  airQuality.usepaindex,
+                  airQuality.gbdefraindex
+                ]
+              }
+            ]
+          }
+        ]
+      };
+      this.radarChartLoading = false;
+    });
+  }
+
   refreshLineChart() {
     this.setLineChartData(this.selectedCity);
   }
@@ -163,11 +177,9 @@ export class WeatherCityDetailsComponent implements OnChanges, OnInit, OnDestroy
     this.setGaugeChartData(this.selectedCity);
   }
 
-  setRadarChartDay(day: maxTempDay) {
-    this.radarChartDay = day;
+  refreshRadarChart() {
+    this.setRadarChartData(this.selectedCity);
   }
-
-  refreshRadarChart() {}
 
   saveUnSaveFavoriteCity(isSaved: boolean, cityName: string) {
     //I'm not using this.selectedCity because I want to save case sensitive text

@@ -7,11 +7,11 @@ export const selectIsLoggedIn = createSelector(weatherState, (state: WeatherStat
 
 export const selectSelectedCity = createSelector(weatherState, (state: WeatherState) => state.selectedCity);
 
-export const selectFavoriteCities = createSelector(weatherState, (state: WeatherState) => state.favoriteCities);
+export const selectFavoriteCitiesData = createSelector(weatherState, (state: WeatherState) => state.favoriteCitiesData);
 
 export const selectCityIsSaved = (cityName: string) =>
   createSelector(weatherState, (state: WeatherState) =>
-    state.favoriteCities.some(fc => fc.toLowerCase() === cityName.toLowerCase())
+    state.favoriteCitiesData.some(fc => fc.cityName.toLowerCase() === cityName.toLowerCase())
   );
 
 export const selectYesterdayHourlyData = createSelector(
@@ -20,3 +20,8 @@ export const selectYesterdayHourlyData = createSelector(
 );
 
 export const selectLineChartIsLoading = createSelector(weatherState, (state: WeatherState) => state.lineChartLoading);
+
+export const selectCurrentCityWeatherDetails = createSelector(
+  weatherState,
+  (state: WeatherState) => state.currentCityWeatherDetails
+);

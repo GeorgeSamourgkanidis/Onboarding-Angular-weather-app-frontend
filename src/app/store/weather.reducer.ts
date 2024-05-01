@@ -3,13 +3,15 @@ import { initialWeatherState } from './weather.state';
 import {
   getAndSaveYesterdayHourlyWeatherData,
   getAndSaveYesterdayHourlyWeatherDataSuccess,
-  saveFavoriteCitySuccess,
-  setFavoriteCities,
-  setIsLoggedIn,
+  getCurrentCityWeatherDetailsSuccess,
+  getNewSavedFavoriteCityDataSuccess,
+  setLoggedIn,
+  setLoggedOut,
   setSelectedCity,
   setUsername,
   unsaveFavoriteCitySuccess
 } from './weather.actions';
+import { FavoriteCity } from '../models/weather';
 
 export const weatherReducer = createReducer(
   initialWeatherState,
@@ -17,25 +19,30 @@ export const weatherReducer = createReducer(
     ...state,
     username: props.username
   })),
-  on(setIsLoggedIn, (state, props) => ({
+  on(setLoggedIn, state => ({
     ...state,
-    isLoggedIn: props.isLoggedIn
+    isLoggedIn: true
+  })),
+  on(setLoggedOut, state => ({
+    ...state,
+    isLoggedIn: false,
+    favoriteCitiesData: []
   })),
   on(setSelectedCity, (state, props) => ({
     ...state,
     selectedCity: props.cityName
   })),
-  on(setFavoriteCities, (state, props) => ({
+  on(getNewSavedFavoriteCityDataSuccess, (state, props) => ({
     ...state,
-    favoriteCities: props.favoriteCities
-  })),
-  on(saveFavoriteCitySuccess, (state, props) => ({
-    ...state,
-    favoriteCities: [...state.favoriteCities, props.cityToSave]
+    favoriteCitiesData: [...state.favoriteCitiesData, props.cityData].sort((a, b) =>
+      a.cityName.localeCompare(b.cityName)
+    )
   })),
   on(unsaveFavoriteCitySuccess, (state, props) => ({
     ...state,
-    favoriteCities: state.favoriteCities.filter(cityName => cityName !== props.cityToUnsave)
+    favoriteCitiesData: state.favoriteCitiesData.filter(
+      (cityDetails: FavoriteCity) => cityDetails.cityName !== props.cityToUnsave
+    )
   })),
   on(getAndSaveYesterdayHourlyWeatherData, state => ({
     ...state,
@@ -45,5 +52,9 @@ export const weatherReducer = createReducer(
     ...state,
     yesterdayHourlyData: props.hourlyData,
     lineChartLoading: false
+  })),
+  on(getCurrentCityWeatherDetailsSuccess, (state, props) => ({
+    ...state,
+    currentCityWeatherDetails: props.weatherDetails
   }))
 );

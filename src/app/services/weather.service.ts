@@ -28,32 +28,22 @@ export class WeatherService {
   }
 
   checkSearchValidity(cityName: string) {
-    const url = `${environment.baseWeatherUrl}/search.json?key=${environment.apiKey}&q=${cityName}`;
-    return this.http.get(url);
-  }
-
-  getCurrentWeather(cityName: string) {
-    const url = `${environment.baseWeatherUrl}/current.json?key=${environment.apiKey}&q=${cityName}&aqi=yes`;
+    const url = `${environment.baseBackendUrl}/Weather/checkSearchValidity/${cityName}`;
     return this.http.get(url);
   }
 
   getTodayAndTomorrowForecast(cityName: string) {
-    const url = `${environment.baseWeatherUrl}/forecast.json?key=${environment.apiKey}&q=${cityName}&days=2&aqi=yes&alerts=no`;
+    const url = `${environment.baseBackendUrl}/Weather/getTodayTomorrowMaxTemps/${cityName}`;
     return this.http.get(url);
   }
 
   getTodayForecast(cityName: string) {
-    const url = `${environment.baseWeatherUrl}/forecast.json?key=${environment.apiKey}&q=${cityName}&days=1&aqi=yes&alerts=no`;
+    const url = `${environment.baseBackendUrl}/Weather/getTodayForecast/${cityName}`;
     return this.http.get(url);
   }
 
   getYesterdayWeather(cityName: string) {
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = currentDate.getMonth() + 1;
-    const day = currentDate.getDate() - 1;
-    const yesterdayDate = `${year}/${month}/${day}`;
-    const url = `${environment.baseWeatherUrl}/history.json?key=${environment.apiKey}&q=${cityName}&dt=${yesterdayDate}`;
+    const url = `${environment.baseBackendUrl}/Weather/getYesterdayMaxTemps/${cityName}`;
     return this.http.get(url);
   }
 }

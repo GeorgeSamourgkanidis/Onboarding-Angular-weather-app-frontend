@@ -3,8 +3,8 @@ import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './core/header/header.component';
 import { FooterComponent } from './core/footer/footer.component';
 import { Store } from '@ngrx/store';
-import { setIsLoggedIn, setUsername } from './store/weather.actions';
-import { Observable, take } from 'rxjs';
+import { setLoggedIn, setLoggedOut, setUsername } from './store/weather.actions';
+import { Observable } from 'rxjs';
 import { selectIsLoggedIn } from './store/weather.selector';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { LoginComponent } from './core/login/login.component';
@@ -25,17 +25,14 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
-    this.authService
-      .getMe()
-      .pipe(take(1))
-      .subscribe({
-        next: (name: string) => {
-          this.store.dispatch(setUsername({ username: name }));
-          this.store.dispatch(setIsLoggedIn({ isLoggedIn: true }));
-        },
-        error: () => {
-          this.store.dispatch(setIsLoggedIn({ isLoggedIn: false }));
-        }
-      });
+    this.authService.getMe().subscribe({
+      next: (name: string) => {
+        this.store.dispatch(setUsername({ username: name }));
+        this.store.dispatch(setLoggedIn());
+      },
+      error: () => {
+        this.store.dispatch(setLoggedOut());
+      }
+    });
   }
 }

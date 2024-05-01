@@ -20,22 +20,26 @@
     <mat-hint class="text-danger" *ngIf="searchError"> Input not valid. </mat-hint>
   </mat-form-field>
 
-  @for (favoriteCityData of favoriteCitiesData; track favoriteCityData) {
-    <div
-      class="favoriteCity mb-3"
-      [ngClass]="{ selectedCity: (selectedCity$ | async)?.toLowerCase() === favoriteCityData.cityName?.toLowerCase() }"
-      (click)="handleFavoriteCityClicked(favoriteCityData)">
-      <div class="w-100 details align-items-center">
-        <div class="w-50 d-flex justify-content-between gap2 flex-wrap align-items-center pe-3">
-          <img class="weatherIcon" [src]="favoriteCityData.currentWeatherIcon" alt="" />
-          <div class="fw-bold">{{ favoriteCityData.max }}&deg;C - {{ favoriteCityData.min }}&deg;C</div>
+  <ng-container *ngrxLet="favoriteCitiesData$ as favoriteCitiesData">
+    @for (favoriteCityData of favoriteCitiesData; track favoriteCityData) {
+      <div
+        class="favoriteCity mb-3"
+        [ngClass]="{
+          selectedCity: (selectedCity$ | async)?.toLowerCase() === favoriteCityData.cityName?.toLowerCase()
+        }"
+        (click)="handleFavoriteCityClicked(favoriteCityData)">
+        <div class="w-100 details align-items-center">
+          <div class="w-50 d-flex justify-content-between gap2 flex-wrap align-items-center pe-3">
+            <img class="weatherIcon" [src]="favoriteCityData.currentWeatherIcon" alt="" />
+            <div class="fw-bold">{{ favoriteCityData.max }}&deg;C - {{ favoriteCityData.min }}&deg;C</div>
+          </div>
+          <div class="d-flex gap3">
+            <span class="separator">|</span>
+            <span>{{ favoriteCityData.cityName }}</span>
+          </div>
         </div>
-        <div class="d-flex gap3">
-          <span class="separator">|</span>
-          <span>{{ favoriteCityData.cityName }}</span>
-        </div>
+        <mat-icon class="ms-auto">chevron_right</mat-icon>
       </div>
-      <mat-icon class="ms-auto">chevron_right</mat-icon>
-    </div>
-  }
+    }
+  </ng-container>
 </div>

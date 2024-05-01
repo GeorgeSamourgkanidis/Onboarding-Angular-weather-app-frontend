@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Subject, take, takeUntil } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
-import { setIsLoggedIn, setUsername } from '../../store/weather.actions';
+import { setLoggedIn, setUsername } from '../../store/weather.actions';
 import { Store } from '@ngrx/store';
 import { NgIf } from '@angular/common';
 import { FacebookLoginProvider, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.error = null;
     sessionStorage.setItem('authToken', token);
     this.store.dispatch(setUsername({ username: username }));
-    this.store.dispatch(setIsLoggedIn({ isLoggedIn: true }));
+    this.store.dispatch(setLoggedIn());
     this.router.navigate(['']);
   }
 

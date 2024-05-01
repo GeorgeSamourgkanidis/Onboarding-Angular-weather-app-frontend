@@ -8,15 +8,17 @@ import { FavoriteCity } from '../../models/weather';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WeatherService } from '../../services/weather.service';
-import { Observable, Subject, take, takeUntil } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectFavoriteCities, selectIsLoggedIn, selectSelectedCity } from '../../store/weather.selector';
-import { getFavoriteCities, setFavoriteCities, setSelectedCity } from '../../store/weather.actions';
+import { selectFavoriteCitiesData, selectIsLoggedIn, selectSelectedCity } from '../../store/weather.selector';
+import { setSelectedCity } from '../../store/weather.actions';
+import { LetDirective } from '@ngrx/component';
 
 @Component({
   selector: 'app-left-side-panel',
   standalone: true,
   imports: [
+    LetDirective,
     CommonModule,
     FormsModule,
     MatFormFieldModule,
@@ -37,7 +39,7 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
   private store = inject(Store);
   private ngUnsubscribe = new Subject<void>();
   isLoggedIn$: Observable<boolean>;
-  favoriteCitiesData: FavoriteCity[] = [];
+  favoriteCitiesData$: Observable<FavoriteCity[]>;
 
   constructor(private weatherService: WeatherService) {}
 
@@ -48,34 +50,8 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoggedIn$ = this.store.select(selectIsLoggedIn);
-    this.isLoggedIn$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((logged: boolean) => {
-      if (logged) {
-        this.store.dispatch(getFavoriteCities());
-      } else {
-        // on logout delete favoriteCities
-        this.store.dispatch(setFavoriteCities({ favoriteCities: [] }));
-      }
-    });
     this.selectedCity$ = this.store.select(selectSelectedCity);
-    this.store
-      .select(selectFavoriteCities)
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(favoriteCities => {
-        this.favoriteCitiesData = [];
-        favoriteCities.forEach(favoriteCity => {
-          this.weatherService
-            .getTodayForecast(favoriteCity)
-            .pipe(take(1))
-            .subscribe((res: any) =>
-              this.favoriteCitiesData.push({
-                min: res.forecast.forecastday[0].day.mintemp_c,
-                max: res.forecast.forecastday[0].day.maxtemp_c,
-                cityName: favoriteCity,
-                currentWeatherIcon: res.forecast.forecastday[0].day.condition.icon
-              })
-            );
-        });
-      });
+    this.favoriteCitiesData$ = this.store.select(selectFavoriteCitiesData);
   }
 
   clearSearch() {
@@ -90,19 +66,20 @@ export class LeftSidePanelComponent implements OnInit, OnDestroy {
 
   searchCity() {
     this.showLoading = true;
-    this.weatherService
-      .checkSearchValidity(this.searchInput)
-      .pipe(take(1))
-      .subscribe({
-        next: () => {
+    this.weatherService.checkSearchValidity(this.searchInput).subscribe({
+      next: (results: any) => {
+        if (results.length > 0) {
           this.store.dispatch(setSelectedCity({ cityName: this.searchInput }));
           this.searchError = false;
-          this.showLoading = false;
-        },
-        error: () => {
+        } else {
           this.searchError = true;
-          this.showLoading = false;
         }
-      });
+        this.showLoading = false;
+      },
+      error: () => {
+        this.searchError = true;
+        this.showLoading = false;
+      }
+    });
   }
 }

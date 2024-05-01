@@ -6,8 +6,7 @@ import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectIsLoggedIn } from '../../store/weather.selector';
 import { AsyncPipe } from '@angular/common';
-import { setIsLoggedIn } from '../../store/weather.actions';
-import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { setLoggedOut } from '../../store/weather.actions';
 
 @Component({
   selector: 'app-header',
@@ -36,7 +35,6 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private socialAuthService: SocialAuthService
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +53,7 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     sessionStorage.removeItem('authToken');
-    this.store.dispatch(setIsLoggedIn({ isLoggedIn: false }));
+    this.store.dispatch(setLoggedOut());
   }
 
   login() {

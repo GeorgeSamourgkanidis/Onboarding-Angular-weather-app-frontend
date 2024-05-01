@@ -1,4 +1,4 @@
-@if (currentCityWeatherDetails) {
+<ng-container *ngIf="currentCityWeatherDetails$ | async as currentCityWeatherDetails">
   <div class="detailsContainer">
     <div class="titleDiv">
       <div class="smallScreenVisible">
@@ -80,23 +80,9 @@
         <button mat-button (click)="refreshRadarChart()"><mat-icon>sync</mat-icon></button>
       </div>
 
-      <div class="dayButtonsDiv">
-        <div class="d-flex">
-          @for (day of chartDay; track $index) {
-            <button
-              mat-button
-              class="dayButton"
-              (click)="setRadarChartDay(day)"
-              [ngClass]="{ selectedDay: radarChartDay === day }">
-              {{ day | titlecase }}
-            </button>
-          }
-        </div>
-      </div>
-
       <div class="chart">
         <div echarts [options]="radarChartOption" [loading]="radarChartLoading"></div>
       </div>
     </div>
   </div>
-}
+</ng-container>
