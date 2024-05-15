@@ -1,4 +1,4 @@
-image: node:20.11.1-alpine3.19
+image: node:20.13-bullseye
 
 stages:
   - test
