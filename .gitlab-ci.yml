@@ -1,0 +1,31 @@
+image: node:20.11.1-alpine3.19
+
+stages:
+  - test
+  - deploy
+
+test:
+  stage: test
+  before_script:
+    - apt-get update
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install -y ./google-chrome*.deb;
+    - export CHROME_BIN=/usr/bin/google-chrome
+  script:
+    - npm ci
+    - npm run test -- --no-watch --browsers=ChromeHeadlessCI
+
+pages:
+  stage: deploy
+  script:
+    - npm install -g @angular/cli@17.1.1
+    - npm install
+    - ng build --configuration=development --base-href /onboarding-frontend-weather-app/
+    - mkdir -p public
+    - mv dist/angular-weather-frontend/browser/* public/
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+    - task5/unitTestingCICD
